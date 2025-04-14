@@ -1,0 +1,51 @@
+extend ../../../layouts/default.pug
+
+block main 
+  h1(class='mb-4') #{pageTitle}
+
+  .card.mb-3 
+    .card-header Sample List
+    .card-body 
+      .row.justify-content-end.mb-3
+        .col-auto
+          a(
+            href=`/${prefixAdmin}/part1/sample/create`
+            class="btn btn-outline-success"
+          ) + ADD
+
+    .div.table-responsive
+      table.table.table-bordered
+        thead 
+          tr 
+            th No.
+            th Title
+            th Question
+            th Answer
+            th Status
+            th Actions
+        
+        tbody 
+          each item, itemIndex in samples
+            each question, qIndex in item.questions
+              tr
+                if qIndex === 0
+                  td(rowspan=item.questions.length)= itemIndex + 1
+                  td(rowspan=item.questions.length)= item.title
+                td= question
+                td= item.answers[qIndex]
+                if qIndex === 0
+                  td(rowspan=item.questions.length)
+                    if item.status == 'active'
+                      a(href="javascript:;" class="badge badge-success") Active 
+                    else 
+                      a(href="javascript:;" class="badge badge-danger") Inactive
+                  td(rowspan=item.questions.length)
+                    a(
+                      class="btn btn-warning btn-sm ml-1"
+                      href=`/${prefixAdmin}/part1/sample/edit/${item.id}`
+                    ) Edit
+                    button(
+                      class="btn btn-danger btn-sm ml-1"
+                      button-delete
+                      data-id=item.id
+                    ) Del

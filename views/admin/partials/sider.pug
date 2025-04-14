@@ -1,0 +1,41 @@
+.wrapper
+  aside#sidebar.sider
+    .d-flex
+      button.toggle-btn(type='button')
+        i.lni.lni-grid-alt
+      .sidebar-logo
+        a(href=`/${prefixAdmin}/dashboard`) NHG EDU
+    ul.sidebar-nav
+      li.sidebar-item
+        a.sidebar-link(href=`/${prefixAdmin}/dashboard`)
+          i.fa-solid.fa-house
+          span Dashboard
+      
+      li.sidebar-item
+        a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/part1` data-bs-toggle='collapse' data-bs-target='#auth' aria-expanded='false' aria-controls='auth')
+          i.fa-solid.fa-wave-square
+          span Part 1
+        ul#auth.sidebar-dropdown.list-unstyled.collapse(data-bs-parent='#sidebar')
+          li.sidebar-item-sub
+            a.sidebar-link(href=`/${prefixAdmin}/part1/sample/index`) Sample
+          li.sidebar-item-sub
+            a.sidebar-link(href=`/${prefixAdmin}/part1/practice`) Practice
+      li.sidebar-item
+        a.sidebar-link(href=`/${prefixAdmin}/part2`)
+          i.fa-solid.fa-sliders
+          span Part 2
+      li.sidebar-item
+        a.sidebar-link(href='#')
+          i.lni.lni-user
+          span Profile
+
+      li.sidebar-item
+        a.sidebar-link(href='#')
+          i.lni.lni-cog
+          span Setting
+    .sidebar-footer
+      a.sidebar-link(href='#')
+        i.lni.lni-exit
+        span Logout
+
+

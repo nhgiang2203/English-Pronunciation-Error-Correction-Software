@@ -1,0 +1,27 @@
+extend ../../layouts/default
+include ../../mixins/box-head
+
+block main 
+  .container.my-3
+    .row 
+      .col-12 
+        +box-head(pageTitle)
+
+    //- Part 1 block
+    .row 
+      .col-12
+        .card
+          .card-header.bg-primary.text-white
+            h5.mb-0 Part 1
+
+          .card-body
+            .row
+              each sample in samples
+                .col-6.mb-3 
+                  .card
+                    .card-body
+                      h5.card-title
+                        a(href=`part1/sample/${sample.slug}`) #{sample.title}
+              
+
+  
