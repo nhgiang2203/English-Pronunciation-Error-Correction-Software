@@ -113,15 +113,10 @@ function uploadAudio(type, index) {
       });
 
       resultDiv.innerHTML = `
-      <div class="mt-3 border rounded p-3 bg-light-subtle">
-        <div><strong>Câu gốc:</strong> <span>...</span></div>
-        <div><strong>IPA:</strong> <span>...</span></div>
-        <div class="mt-2">
-          <strong>Điểm tổng:</strong>
-          <div class="progress" style="height: 20px;">
-            <div class="progress-bar bg-success" style="width: 80%;">0.80</div>
-          </div>
-        </div>
+      <div class="mt-2 border rounded p-2 bg-light">
+        <div><strong>Câu gốc:</strong> ${highlightedSentence}</div>
+        <div><strong>IPA:</strong> ${highlightedIPA}</div>
+        <div><strong>Điểm tổng:</strong> <span class="badge bg-${data.score >= 0.8 ? 'success' : data.score >= 0.5 ? 'warning' : 'danger'}">${data.score}</span></div>
       </div>
     
       `;
@@ -136,6 +131,121 @@ function uploadAudio(type, index) {
     });
 }
 
+function playAudio(url) {
+  const audio = new Audio(url);
+  audio.play();
+}
+
+function uploadAudioPrac(type, index) {
+  const uploadBtn = document.getElementById(`upload-btn-${type}-${index}`);
+  uploadBtn.textContent = "⬆️ Đang gửi...";
+  uploadBtn.disabled = true;
+
+  const blob = audioBlobs[`${type}-${index}`];
+  const inputTextElem = document.getElementById(`text-${type}-${index}`);
+  const inputText = inputTextElem ? inputTextElem.textContent.trim() : "";
+
+  if (!blob || !inputText) {
+    alert("Thiếu audio hoặc text gốc!");
+    uploadBtn.textContent = "⬆️ Gửi";
+    uploadBtn.disabled = false;
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("audio", blob, `${type}-${index}.webm`);
+  formData.append("text", inputText);
+
+  fetch("http://127.0.0.1:5000/part2", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      const resultDiv = document.getElementById(`${type}-result-${index}`);
+      if (!resultDiv) return;
+
+      let highlightedIPA = "";
+      let errorIndex = 0;
+
+      for (let i = 0; i < data.label_ipa.length; i++) {
+        const ch = data.label_ipa[i];
+        if (ch === " ") {
+          highlightedIPA += " ";
+        } else {
+          const isError = data.error_char_indexes[errorIndex] === false;
+          highlightedIPA += `<span style="color: ${isError ? 'red' : 'green'}; font-weight: bold;">${ch}</span>`;
+          errorIndex++;
+        }
+      }
+
+      let wordScoresHTML = "";
+      data.word_scores.forEach((score) => {
+        let color = score >= 0.8 ? 'green' : score >= 0.5 ? 'orange' : 'red';
+        wordScoresHTML += `<span style="margin-right:10px; font-weight:bold; color:${color}">[${score}]</span>`;
+      });
+
+      const words = data.text.split(" ");
+      let highlightedSentence = "";
+      words.forEach((word, i) => {
+        const score = data.word_scores[i];
+        let color = score >= 0.8 ? 'green' : score >= 0.5 ? 'orange' : 'red';
+        highlightedSentence += `<span style="color:${color}; font-weight:bold; margin-right:5px">${word}</span>`;
+      });
+
+      resultDiv.innerHTML = `
+        <div class="mt-2 border rounded p-2 bg-light">
+          <div><strong>Câu gốc:</strong> ${highlightedSentence}</div>
+          <div><strong>IPA:</strong> ${highlightedIPA}</div>
+          <div><strong>Điểm tổng:</strong> <span class="badge bg-${data.score >= 0.8 ? 'success' : data.score >= 0.5 ? 'warning' : 'danger'}">${data.score}</span></div>
+        </div>
+      `;
+
+      uploadBtn.textContent = "⬆️ Gửi lại";
+    })
+    .catch(err => {
+      alert("Gửi thất bại: " + err.message);
+      uploadBtn.textContent = "⬆️ Gửi";
+    })
+    .finally(() => {
+      uploadBtn.disabled = false;
+    });
+}
+
+
+// Show alert
+const showAlert = document.querySelector('[show-alert]');
+if (showAlert) {
+  const time = parseInt(showAlert.getAttribute('data-time'));
+  const closeAlert = document.querySelector('[close-alert]');
+  
+  setTimeout(() => {
+    showAlert.classList.add('alert-hidden');
+  }, time);
+
+  closeAlert.addEventListener('click', () => {
+    showAlert.classList.add('alert-hidden');
+  });
+}
+
+
+// // Confirm password
+// const registerForm = document.getElementById('register-form');
+// if (registerForm) {
+//   registerForm.addEventListener('submit', function (e) {
+//     const password = registerForm.querySelector('input[name="password"]').value;
+//     const confirmPassword = registerForm.querySelector('input[name="confirmPassword"]').value;
+//     const errorMsg = document.getElementById('error-message');
+
+//     if (password !== confirmPassword) {
+//       e.preventDefault();
+//       errorMsg.textContent = "❌ Password do not match!";
+//       errorMsg.style.display = "block";
+//     } else {
+//       errorMsg.style.display = "none";
+//     }
+//   });
+// }
 
 
 

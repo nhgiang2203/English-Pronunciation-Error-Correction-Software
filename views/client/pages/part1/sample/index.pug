@@ -7,7 +7,12 @@ block main
       .col-12 
         +box-head(pageTitle)
 
-    each item, index in sample.questions 
+    each questionItem, index in sample.questions
+      - const questionText = questionItem[0];
+      - const questionAudio = questionItem[1];
+      - const answerText = sample.answers[index][0];
+      - const answerAudio = sample.answers[index][1];
+
       .accordion.mb-3(id=`accordion-${index}`)
         .accordion-item.shadow-sm
           h2.accordion-header
@@ -25,9 +30,15 @@ block main
                 .col-md-6
                   .card.border-primary
                     .card-body
-                      h6.text-primary.mb-2 Question
-                      p.mb-2= item
-                      div.d-none(id=`text-question-${index}`)= item
+                      h6.text-primary.mb-2
+                        i.fas.fa-volume-up.me-1.text-primary(
+                          role="button", 
+                          onclick=`playAudio('${questionAudio}')`
+                        )
+                        | Question
+
+                      p.mb-2= questionText
+                      div.d-none(id=`text-question-${index}`)= questionText
 
                       .btn-group.mb-2(role="group")
                         button.btn.btn-sm.btn-outline-primary(
@@ -50,16 +61,24 @@ block main
                           disabled
                         ) ⬆️ Gửi
 
+
                       audio.controls.mt-2(id=`question-audio-${index}`)
+                        source(src=questionAudio, type="audio/mp4")
                       div.mt-3(id=`question-result-${index}`)
 
                 // Right: Answer
                 .col-md-6
                   .card.border-success
                     .card-body
-                      h6.text-success.mb-2 Answer 
-                      p.mb-2= sample.answers[index]
-                      div.d-none(id=`text-answer-${index}`)= sample.answers[index]
+                      h6.text-success.mb-2
+                        i.fas.fa-volume-up.me-1.text-success(
+                          role="button", 
+                          onclick=`playAudio('${answerAudio}')`
+                        )
+                        | Answer
+
+                      p.mb-2= answerText
+                      div.d-none(id=`text-answer-${index}`)= answerText
 
                       .btn-group.mb-2(role="group")
                         button.btn.btn-sm.btn-outline-success(
@@ -83,4 +102,5 @@ block main
                         ) ⬆️ Gửi
 
                       audio.controls.mt-2(id=`answer-audio-${index}`)
+                        source(src=answerAudio, type="audio/mp4")
                       div.mt-3(id=`answer-result-${index}`)

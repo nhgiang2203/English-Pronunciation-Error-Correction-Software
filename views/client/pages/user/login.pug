@@ -1,0 +1,33 @@
+extend ../../layouts/default
+include ../../mixins/box-head
+include ../../mixins/alert
+
+block main
+  div.alert-container
+    +alert-success (5000)
+    +alert-error (5000)
+
+  section.vh-100(style='background-color: #508bfc;')
+    .container.py-5.h-100
+      .row.d-flex.justify-content-center.align-items-center.h-100
+        .col-12.col-md-8.col-lg-6.col-xl-5
+          .card.shadow-2-strong(style='border-radius: 1rem;')
+            .card-body.p-5.text-center
+              h3.mb-5 Sign in
+              form(method='POST', action='/user/login')
+                .form-outline.mb-4
+                  input#typeEmailX-2.form-control.form-control-lg(type='email' name='email')
+                  label.form-label(for='typeEmailX-2') Email
+                .form-outline.mb-4
+                  input#typePasswordX-2.form-control.form-control-lg(type='password' name='password')
+                  label.form-label(for='typePasswordX-2') Password
+                // Checkbox
+                .form-check.d-flex.justify-content-start.mb-4
+                  input#form1Example3.form-check-input(type='checkbox' value='')
+                  label.form-check-label(for='form1Example3')  Remember password 
+                button.btn.btn-primary.btn-lg.btn-block(type='submit') Login
+                hr.my-4
+                a.btn.btn-lg.btn-block.text-white(style='background-color: #dd4b39;' href='/user/auth/google')
+                  i.fab.fa-google.me-2
+                  |  Sign in with Google
+

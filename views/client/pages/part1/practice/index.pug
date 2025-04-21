@@ -1,0 +1,62 @@
+extend ../../../layouts/default
+include ../../../mixins/box-head
+
+block main 
+  .container.my-4
+    .row 
+      .col-12 
+        +box-head(pageTitle)
+
+    //- List of Questions
+    each questionItem, index in practice.questions
+      .accordion.mb-3(id=`accordion-${index}`)
+        .accordion-item.shadow-sm
+          h2.accordion-header
+            button.accordion-button.collapsed(
+              type="button", 
+              data-bs-toggle="collapse", 
+              data-bs-target=`#collapse-${index}`
+            )
+              | 📝 Question #{index + 1}
+
+          .accordion-collapse.collapse(id=`collapse-${index}`)
+            .accordion-body
+              //- Hiển thị câu hỏi
+              .card.border-info
+                .card-body
+                  h6.text-info.mb-2
+                    i.fas.fa-question-circle.me-1.text-info
+                    | Question
+                  p.mb-0(id=`text-question-${index}`)= questionItem.text
+
+              //- Hướng dẫn + Ghi âm câu trả lời
+              p.text-muted.mt-2.mb-1.small
+                | Ghi âm câu trả lời của bạn cho câu hỏi trên:
+
+              .btn-group.mb-2(role="group")
+                button.btn.btn-sm.btn-outline-primary(
+                  id=`start-btn-question-${index}`,
+                  type="button",
+                  onclick=`startRecording('question', ${index})`
+                ) 🎙️ Ghi âm
+
+                button.btn.btn-sm.btn-outline-danger(
+                  id=`stop-btn-question-${index}`,
+                  type="button",
+                  onclick=`stopRecording('question', ${index})`,
+                  disabled
+                ) ⏹️ Dừng
+
+                button.btn.btn-sm.btn-outline-secondary(
+                  id=`upload-btn-question-${index}`,
+                  type="button",
+                  onclick=`uploadAudioPrac('question', ${index})`,
+                  disabled
+                ) ⬆️ Gửi
+
+              audio.controls.mt-2(id=`question-audio-${index}`)
+              //- Kết quả đánh giá
+              div.mt-3(id=`question-result-${index}`)
+
+
+                             

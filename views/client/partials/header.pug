@@ -1,34 +1,42 @@
-header.header 
+header.header
   .container
-    .row.align-items-center 
-      .col-3 
-        .inner-logo 
+    .row.align-items-center.justify-content-between
+      .col-md-3.col-12.mb-2.mb-md-0
+        .inner-logo.text-md-left.text-center
           a(href='/')
             img(src='/images/logo.svg', alt='logo', class='logo')
 
-      .col-5 
-        .box-search 
-          form(
-            action='search/result'
-            method='GET'
-          ) 
-          div(class='form-group d-flex mb-0')
-            input(
-              type='text'
-              placeholder='Nhập từ khóa..'
-              class='form-control'
-              name='keyword'
-              value=keyword
-            )
-            button(
-              type='submit'
-              class='btn btn-primary'
-            ) Search
-          .inner-suggest 
-            .inner-list 
-      
-      .col-4 
-        .inner-menu 
-          ul 
-            li 
-              a(href='/dashboard') <i class="fa-solid fa-house"></i>  Trang chủ
+      .col-md-5.col-12.mb-2.mb-md-0
+        .box-search
+          form(action='/search/result', method='GET')
+            .form-group.d-flex.mb-0
+              input.form-search.form-control(
+                type='text',
+                name='keyword',
+                placeholder='Nhập từ khóa...',
+                value=keyword
+              )
+              button.btn.btn-primary.ml-2(type='submit') Search
+
+      .col-md-4.col-12
+        .inner-menu.text-md-right.text-center
+          ul.list-inline.mb-0
+            li.list-inline-item
+              a(href='/dashboard')
+                i.fa-solid.fa-house
+                |  Trang chủ
+            
+            if(!user)
+              li.list-inline-item
+                a(href='/user/login')
+                  i.fa-solid.fa-right-from-bracket
+                  |  Đăng nhập
+              li.list-inline-item
+                a(href='/user/register')
+                  i.fa-solid.fa-user-plus
+                  |  Đăng kí
+            else
+              li.list-inline-item
+                a(href='/user/logout')
+                  i.fa-solid.fa-right-from-bracket
+                  |  Đăng xuất

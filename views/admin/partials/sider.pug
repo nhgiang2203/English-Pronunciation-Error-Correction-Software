@@ -7,10 +7,13 @@
         a(href=`/${prefixAdmin}/dashboard`) NHG EDU
     ul.sidebar-nav
       li.sidebar-item
-        a.sidebar-link(href=`/${prefixAdmin}/dashboard`)
+        a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/dashboard` data-bs-toggle='collapse' data-bs-target='#auth' aria-expanded='false' aria-controls='auth')
           i.fa-solid.fa-house
           span Dashboard
-      
+        ul#auth.sidebar-dropdown.list-unstyled.collapse(data-bs-parent='#sidebar')
+          li.sidebar-item-sub
+            a.sidebar-link(href=`/${prefixAdmin}/news/index`) News
+
       li.sidebar-item
         a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/part1` data-bs-toggle='collapse' data-bs-target='#auth' aria-expanded='false' aria-controls='auth')
           i.fa-solid.fa-wave-square

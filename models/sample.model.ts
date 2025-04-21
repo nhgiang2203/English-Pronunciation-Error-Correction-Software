@@ -5,11 +5,11 @@ mongoose.plugin(slug);
 const sampleSchema = new mongoose.Schema({
   title: String,
   questions: {
-    type: [String],
+    type: [[String]],
     required: true
   },
   answers: {
-    type: [String],
+    type: [[String]],
     required: true
   },
   status: String,

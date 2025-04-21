@@ -1,0 +1,65 @@
+extend ../../layouts/default.pug
+
+block main 
+  h1(class='mb-4') #{pageTitle}
+
+  .card.mb-3 
+    .card-header News List
+    .card-body 
+      .row.justify-content-end.mb-3
+        .col-auto
+          a(
+            href=`/${prefixAdmin}/news/create`
+            class="btn btn-outline-success"
+          ) + ADD
+
+    .div.table-responsive
+      table.table.table-bordered
+        thead 
+          tr 
+            th No.
+            th Title
+            th Thumbnail
+            th Content
+            th Status
+            th Actions
+        
+        tbody 
+          each item, index in news
+              tr
+                td #{index+1}
+                td #{item.title}
+                td 
+                  img(
+                    src=item.img 
+                    alt=item.title 
+                    width="80px"
+                    height="auto"
+                  )
+                td.content-preview #{item.content}
+                td 
+                  if(item.status === 'active')
+                    a(
+                      href="javascript:;"
+                      class="badge badge-success"
+                    ) active 
+                  else 
+                    a(
+                      href="javascript:;"
+                      class="badge badge-danger"
+                    ) inactive 
+                
+                td
+                  a(
+                    class="btn btn-secondary btn-sm"
+                    href=`/${prefixAdmin}/news/detail/${item.id}`
+                  ) Detail
+                  a(
+                    class="btn btn-warning btn-sm ml-1"
+                    href=`/${prefixAdmin}/news/edit/${item.id}`
+                  ) Edit
+                  button(
+                    class="btn btn-danger btn-sm ml-1"
+                    button-delete
+                    data-id=item.id
+                  ) Del

@@ -1,7 +1,13 @@
-// const hamBurger = document.querySelector(".toggle-btn");
+// Show preview image
+const uploadImage = document.querySelector('[upload-image]');
+if(uploadImage){
+  const uploadImageInput = uploadImage.querySelector('[upload-image-input]');
+  const uploadImagePreview = uploadImage.querySelector('[upload-image-preview]');
 
-// hamBurger.addEventListener("click", function () {
-//   document.querySelector("#sidebar").classList.toggle("expand");
-// });
-
-// document.querySelector("#sidebar").classList.toggle("expand");
+  uploadImageInput.addEventListener('change', (e) => {
+    if(e.target.files.length){
+      const image = URL.createObjectURL(e.target.files[0]);
+      uploadImagePreview.src=image;
+    }
+  })
+}

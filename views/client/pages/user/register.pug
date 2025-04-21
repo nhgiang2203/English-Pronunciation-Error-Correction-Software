@@ -1,0 +1,34 @@
+extend ../../layouts/default
+include ../../mixins/alert
+
+block styles
+  link(rel='stylesheet', href='/css/styleRegister.css')
+
+block main
+  div.alert-container
+    +alert-success (5000)
+    +alert-error (5000)
+
+  .body-section
+    .wrapper
+      .inner
+        img.image-1(src='/images/image-1.png' alt='')
+        form#register-form(action='/user/register' method='POST')
+          h3 New Account?
+          .form-holder
+            span(class="fa fa-user")
+            input.form-control(type='text' placeholder='Username' name='username')
+          .form-holder
+            span(class="fa fa-envelope")
+            input.form-control(type='text' placeholder='Mail' name='email')
+          .form-holder
+            span(class="fa fa-lock")
+            input.form-control(type='password' placeholder='Password' name='password')
+          .form-holder
+            span(class="fa fa-lock")
+            input.form-control(type='password' placeholder='Confirm Password' name='confirmPassword')
+          p#error-message.text-danger.mt-2(style="display: none; font-weight: bold")
+
+          button
+            span Register
+        img.image-2(src='/images/image-2.png' alt='')
