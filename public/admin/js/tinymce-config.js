@@ -1,41 +1,39 @@
-const listTextareaMCE = document.querySelectorAll("[textarea-mce]");
-
-if (listTextareaMCE.length > 0) {
-  listTextareaMCE.forEach((textarea) => {
-    const id = textarea.id;
-    tinymce.init({
-      selector: `#${id}`,
-      plugins: "image code",
-      image_title: true,
-      automatic_uploads: true,
-      file_picker_types: "image",
-
-      // Callback chọn file ảnh từ máy
-      file_picker_callback: function (cb, value, meta) {
-        if (meta.filetype === 'image') {
-          var input = document.createElement('input');
-          input.setAttribute('type', 'file');
-          input.setAttribute('accept', 'image/*');
-
-          input.onchange = function () {
-            var file = this.files[0];
-
-            var reader = new FileReader();
-            reader.onload = function () {
-              var id = 'blobid' + (new Date()).getTime();
-              var blobCache = tinymce.activeEditor.editorUpload.blobCache;
-              var base64 = reader.result.split(',')[1];
-              var blobInfo = blobCache.create(id, file, base64);
-              blobCache.add(blobInfo);
-
-              cb(blobInfo.blobUri(), { title: file.name });
+function initTinyMCE() {
+  document.querySelectorAll('textarea[textarea-mce]').forEach((el) => {
+    if (!el.classList.contains('mce-initialized')) {
+      tinymce.init({
+        target: el,
+        plugins: "image code",
+        image_title: true,
+        automatic_uploads: true,
+        file_picker_types: "image",
+        setup: function (editor) {
+          editor.on('init', function () {
+            el.classList.add('mce-initialized');
+          });
+        },
+        file_picker_callback: function (cb, value, meta) {
+          if (meta.filetype === 'image') {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.onchange = function () {
+              const file = this.files[0];
+              const reader = new FileReader();
+              reader.onload = function () {
+                const id = 'blobid' + (new Date()).getTime();
+                const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                const base64 = reader.result.split(',')[1];
+                const blobInfo = blobCache.create(id, file, base64);
+                blobCache.add(blobInfo);
+                cb(blobInfo.blobUri(), { title: file.name });
+              };
+              reader.readAsDataURL(file);
             };
-            reader.readAsDataURL(file);
-          };
-
-          input.click();
+            input.click();
+          }
         }
-      }
-    });
+      });
+    }
   });
 }

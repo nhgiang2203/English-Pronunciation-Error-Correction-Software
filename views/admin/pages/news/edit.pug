@@ -1,0 +1,94 @@
+extend ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+
+block main 
+
+    +alert-success(5000)
+    +alert-error(5000)
+
+
+    h1(class="mb-4") Edit news
+
+    form(
+        action=`/${prefixAdmin}/news/edit/${news.slug}?_method=PATCH`
+        method="POST"
+        enctype="multipart/form-data"
+    )
+        div(class="form-group")
+            label(for="title") Title
+            input(
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+                value=news.title
+            )
+        
+
+        div(class="form-group")
+            label(for="desc") Content
+            textarea(
+                type='text'
+                class='form-control'
+                id='content'
+                name='content'
+                rows='10'
+                textarea-mce
+                value=news.content
+            ) !{news.content}
+
+        div(
+          class='form-group'
+          upload-image
+        )
+          label(for='img') Image 
+          input(
+            type='file'
+            class='form-control-file'
+            id='img'
+            name='img'
+            accept='image/*'
+            upload-image-input
+          )
+          img(
+            src=news.img
+            class='image-preview'
+            upload-image-preview
+          )
+
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusActive"
+                name="status"
+                value="active"
+                checked=(news.status == "active" ? true : false)
+            )
+            label(for="statusActive" class="form-check-label") Active
+
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusInActive"
+                name="status"
+                value="inactive"
+                checked=(news.status == "inactive" ? true : false)
+            )
+            label(for="statusInActive" class="form-check-label") Inactive
+        div(class="form-group")
+            button(
+                type="submit"
+                class="btn btn-primary"
+            ) Update
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof initTinyMCE === 'function') {
+        initTinyMCE(); // hoặc initTinyMCEForNewTextareas()
+      }
+    });

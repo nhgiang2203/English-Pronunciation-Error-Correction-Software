@@ -1,0 +1,62 @@
+extends ../../../layouts/default.pug
+
+block main
+  h1.mb-4.text-primary #{pageTitle}
+
+  if (sample.status)
+        div(class="mb-4") 
+            span Status 
+            if (sample.status == "active")
+                span(class="badge badge-success") Active
+            else 
+                span(class="badge badge-danger") Inactive
+
+  .card.shadow-sm.mb-4
+    .card-body.p-0
+      .table-wrapper
+        .table-responsive
+          table.table.table-hover.align-middle.fixed-table
+            thead.table-light
+              tr
+                th(scope='col') No.
+                th(scope='col') Question
+                th(scope='col') Answer
+
+            tbody
+              each question, qIndex in sample.questions
+                tr
+                  // Số thứ tự câu hỏi
+                  td= qIndex + 1
+
+                  // Câu hỏi
+                  td.question-cell
+                    div.d-flex
+                      i.fas.fa-volume-up.me-1.text-primary(
+                              role="button", 
+                              onclick=`playAudio('${question[1]}')`
+                            )
+                      span.fw-semibold.text-dark !{question[0]}
+                    if question[1]
+                      br
+                      small.text-muted
+                        a(href=question[1], target="_blank")= question[1]
+
+                  // Câu trả lời
+                  td.answer-cell
+                    div.d-flex
+                      i.fas.fa-volume-up.me-1.text-primary(
+                              role="button", 
+                              onclick=`playAudio('${sample.answers[qIndex][1]}')`
+                            )
+                      span.answer-text !{sample.answers[qIndex][0]}
+                    if sample.answers[qIndex][1]
+                      br
+                      small.answer-url
+                        a(href=sample.answers[qIndex][1], target="_blank")= sample.answers[qIndex][1]
+
+
+  a(
+    href=`/${prefixAdmin}/part1/sample/edit/${sample.slug}`
+    type="submit"
+    class="btn btn-warning"
+    ) Edit

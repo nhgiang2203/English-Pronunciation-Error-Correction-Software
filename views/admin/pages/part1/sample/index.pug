@@ -1,51 +1,76 @@
-extend ../../../layouts/default.pug
+extends ../../../layouts/default.pug
 
-block main 
-  h1(class='mb-4') #{pageTitle}
+block main
+  h1.mb-4.text-primary #{pageTitle}
 
-  .card.mb-3 
-    .card-header Sample List
-    .card-body 
-      .row.justify-content-end.mb-3
-        .col-auto
-          a(
-            href=`/${prefixAdmin}/part1/sample/create`
-            class="btn btn-outline-success"
-          ) + ADD
+  .card.shadow-sm.mb-4
+    .card-header.bg-light.d-flex.justify-content-between.align-items-center
+      span.fw-semibold.text-dark Sample List
+      a.btn.btn-success(href=`/${prefixAdmin}/part1/sample/create`) + ADD
 
-    .div.table-responsive
-      table.table.table-bordered
-        thead 
-          tr 
-            th No.
-            th Title
-            th Question
-            th Answer
-            th Status
-            th Actions
-        
-        tbody 
-          each item, itemIndex in samples
-            each question, qIndex in item.questions
+    .card-body.p-0
+      .table-wrapper
+        .table-responsive
+          table.table.table-hover.align-middle.fixed-table
+            thead.table-light
               tr
-                if qIndex === 0
-                  td(rowspan=item.questions.length)= itemIndex + 1
-                  td(rowspan=item.questions.length)= item.title
-                td= question
-                td= item.answers[qIndex]
-                if qIndex === 0
-                  td(rowspan=item.questions.length)
-                    if item.status == 'active'
-                      a(href="javascript:;" class="badge badge-success") Active 
-                    else 
-                      a(href="javascript:;" class="badge badge-danger") Inactive
-                  td(rowspan=item.questions.length)
-                    a(
-                      class="btn btn-warning btn-sm ml-1"
-                      href=`/${prefixAdmin}/part1/sample/edit/${item.id}`
-                    ) Edit
-                    button(
-                      class="btn btn-danger btn-sm ml-1"
-                      button-delete
-                      data-id=item.id
-                    ) Del
+                th(scope='col') No.
+                th(scope='col') Title
+                th(scope='col') Question
+                th(scope='col') Answer
+                th(scope='col') Status
+                th(scope='col') Actions
+
+            tbody
+              each item, itemIndex in samples
+                each question, qIndex in item.questions
+                  tr
+                    if qIndex === 0
+                      td(rowspan=item.questions.length).align-middle= itemIndex + 1
+                      td(rowspan=item.questions.length).align-middle.fw-bold= item.title
+
+                    // Question cell
+                    td.question-cell
+                      div.d-flex
+                        i.fas.fa-volume-up.me-2.text-primary(
+                          role="button", 
+                          style="align-self: flex-start;",
+                          onclick=`playAudio('${question[1]}')`
+                        )
+                        span.fw-semibold.text-dark !{question[0]}
+
+
+                    // Answer cell
+                    td.answer-cell
+                      div.d-flex
+                        i.fas.fa-volume-up.me-1.text-primary(
+                          role="button", 
+                          onclick=`playAudio('${item.answers[qIndex][1]}')`
+                        )
+                        span.answer-text !{item.answers[qIndex][0]}
+
+                    if qIndex === 0
+                      td(rowspan=item.questions.length).align-middle
+                        if item.status == 'active'
+                          span.badge.bg-success.px-3.py-2 Active
+                        else
+                          span.badge.bg-danger.px-3.py-2 Inactive
+
+                      td(rowspan=item.questions.length).align-middle
+                        a.btn.btn-outline-secondary.btn-sm.me-2(
+                          href=`/${prefixAdmin}/part1/sample/detail/${item.slug}`
+                        ) Detail
+                        a.btn.btn-outline-warning.btn-sm.me-2(
+                          href=`/${prefixAdmin}/part1/sample/edit/${item.slug}`
+                        ) Edit
+                        button.btn.btn-outline-danger.btn-sm(
+                          button-delete
+                          data-id=item.id
+                        ) Del
+
+  form(
+    action=''
+    method='POST'
+    id='form-delete-item'
+    data-path=`/${prefixAdmin}/part1/sample/delete`
+  )

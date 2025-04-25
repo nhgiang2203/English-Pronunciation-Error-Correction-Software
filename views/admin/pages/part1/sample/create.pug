@@ -1,0 +1,68 @@
+extends ../../../layouts/default.pug
+include ../../../mixins/alert.pug
+
+block main
+  +alert-success(5000)
+  +alert-error(5000)
+
+  h1.mb-4 #{pageTitle}
+
+  form#sampleForm(method="POST", action=`/${prefixAdmin}/part1/sample/create`, enctype="multipart/form-data")
+    .form-group 
+      label(for='title') Title 
+      input(
+        type='text'
+        class='form-control'
+        id='title'
+        name='title'
+        required
+      )
+    .card.shadow-sm.mb-4
+      .card-body
+        .table-wrapper
+          .table-responsive
+            table.table.table-bordered.align-middle
+              thead.table-light
+                tr
+                  th(scope='col') No.
+                  th(scope='col') Question
+                  th(scope='col') Answer
+                  th(scope='col') Actions
+
+              tbody#questionTableBody
+
+        button.btn.btn-outline-primary.mt-3(type="button", onclick="addQuestionRow()")
+          i.fas.fa-plus.me-1
+          | Add Question
+
+    div.form-group.form-check.form-check-inline.mt-4
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusActive"
+        name="status"
+        value="active"
+        checked
+      )
+      label(for="statusActive" class="form-check-label") Active
+
+    div.form-group.form-check.form-check-inline
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusInActive"
+        name="status"
+        value="inactive"
+      )
+      label(for="statusInActive" class="form-check-label") Inactive
+
+    div.form-group.mt-4
+      button(type="submit" class="btn btn-success") Create
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof initTinyMCE === 'function') {
+        initTinyMCE(); 
+      }
+    });

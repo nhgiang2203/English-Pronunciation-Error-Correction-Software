@@ -7,18 +7,20 @@
         a(href=`/${prefixAdmin}/dashboard`) NHG EDU
     ul.sidebar-nav
       li.sidebar-item
-        a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/dashboard` data-bs-toggle='collapse' data-bs-target='#auth' aria-expanded='false' aria-controls='auth')
+        a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/dashboard` data-bs-target='#auth1' aria-expanded='false' aria-controls='auth1')
           i.fa-solid.fa-house
-          span Dashboard
-        ul#auth.sidebar-dropdown.list-unstyled.collapse(data-bs-parent='#sidebar')
+          span.menu-title Dashboard
+          i.arrow-icon.fa-solid.fa-angle-down
+        ul#auth1.sidebar-dropdown.list-unstyled.collapse
           li.sidebar-item-sub
             a.sidebar-link(href=`/${prefixAdmin}/news/index`) News
 
       li.sidebar-item
-        a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/part1` data-bs-toggle='collapse' data-bs-target='#auth' aria-expanded='false' aria-controls='auth')
+        a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/part1` data-bs-target='#auth2' aria-expanded='false' aria-controls='auth2')
           i.fa-solid.fa-wave-square
-          span Part 1
-        ul#auth.sidebar-dropdown.list-unstyled.collapse(data-bs-parent='#sidebar')
+          span.menu-title Part 1
+          i.arrow-icon.fa-solid.fa-angle-down
+        ul#auth2.sidebar-dropdown.list-unstyled.collapse
           li.sidebar-item-sub
             a.sidebar-link(href=`/${prefixAdmin}/part1/sample/index`) Sample
           li.sidebar-item-sub
@@ -37,8 +39,8 @@
           i.lni.lni-cog
           span Setting
     .sidebar-footer
-      a.sidebar-link(href='#')
+      a.sidebar-link(href=`/${prefixAdmin}/account/logout`)
         i.lni.lni-exit
-        span Logout
+        span Sign out
 
 

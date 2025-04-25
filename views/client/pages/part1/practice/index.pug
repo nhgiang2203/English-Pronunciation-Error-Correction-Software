@@ -21,7 +21,8 @@ block main
 
           .accordion-collapse.collapse(id=`collapse-${index}`)
             .accordion-body
-              //- Hiển thị câu hỏi
+              
+              //- Câu hỏi
               .card.border-info
                 .card-body
                   h6.text-info.mb-2
@@ -29,7 +30,7 @@ block main
                     | Question
                   p.mb-0(id=`text-question-${index}`)= questionItem.text
 
-              //- Hướng dẫn + Ghi âm câu trả lời
+              //- Ghi âm
               p.text-muted.mt-2.mb-1.small
                 | Ghi âm câu trả lời của bạn cho câu hỏi trên:
 
@@ -54,9 +55,11 @@ block main
                   disabled
                 ) ⬆️ Gửi
 
+              //- Audio preview
               audio.controls.mt-2(id=`question-audio-${index}`)
-              //- Kết quả đánh giá
+
+              //- Kết quả phát âm và hiển thị nút gợi ý (JS sẽ insert vào đây)
               div.mt-3(id=`question-result-${index}`)
 
-
-                             
+block script 
+  script(src="/js/part1.js")

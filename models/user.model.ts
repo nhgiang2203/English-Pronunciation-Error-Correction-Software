@@ -8,6 +8,32 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false 
   },
+  phone: {
+    type: String,
+    default: null
+  },
+  address: {
+    type: String,
+    default: null
+  },
+  slogan: String,
+  facebook: {
+    type: String,
+    default: null
+  },
+  instagram: {
+    type: String,
+    default: null
+  },
+  twitter: {
+    type: String,
+    default: null
+  },
+  myAnswers: [{
+    topicId: String,
+    questionId: String,
+    answer: String
+  }],
   tokenUser: {
     type: String,
     default: generate.generateRandomString(20)
@@ -16,7 +42,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  avatar: String,
+  avatar: {
+    type: String,
+    default: null
+  },
   status: {
     type: String,
     default: 'active'

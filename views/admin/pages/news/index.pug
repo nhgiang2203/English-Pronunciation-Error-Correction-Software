@@ -52,14 +52,22 @@ block main
                 td
                   a(
                     class="btn btn-secondary btn-sm"
-                    href=`/${prefixAdmin}/news/detail/${item.id}`
+                    href=`/${prefixAdmin}/news/detail/${item.slug}`
                   ) Detail
                   a(
                     class="btn btn-warning btn-sm ml-1"
-                    href=`/${prefixAdmin}/news/edit/${item.id}`
+                    href=`/${prefixAdmin}/news/edit/${item.slug}`
                   ) Edit
                   button(
                     class="btn btn-danger btn-sm ml-1"
                     button-delete
                     data-id=item.id
                   ) Del
+  
+  form(
+    action=''
+    method='POST' 
+    id='form-delete-item'
+    data-path=`/${prefixAdmin}/news/delete`
+  )
+

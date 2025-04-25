@@ -1,0 +1,105 @@
+extends ../../../layouts/default.pug
+include ../../../mixins/alert.pug
+
+block main
+  +alert-success(5000)
+  +alert-error(5000)
+
+
+
+  form(method="POST", action=`/${prefixAdmin}/part1/sample/edit/${sample.slug}?_method=PATCH`, enctype="multipart/form-data")
+    div(class="form-group")
+            label(for="title") Title
+            input(
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+                value=sample.title
+            )
+    .card.shadow-sm.mb-4
+      .card-body.p-0
+        .table-wrapper
+          .table-responsive
+            table.table.table-bordered.align-middle
+              thead.table-light
+                tr
+                  th(scope='col') No.
+                  th(scope='col') Question
+                  th(scope='col') Answer
+
+              tbody
+                each question, qIndex in sample.questions
+                  tr
+                    td.align-middle= qIndex + 1
+
+                    // Câu hỏi
+                    td
+                      textarea(
+                          type='text'
+                          class='form-control'
+                          id=`question-${qIndex}`
+                          name=`questions[${qIndex}][text]`
+                          rows='10'
+                          textarea-mce
+                          value=question[0]
+                      ) !{question[0]}
+                      if question[1]
+                        audio.controls.mt-2
+                          source(src=question[1], type="audio/mpeg")
+                      input.form-control.mt-2(type="file", name=`questions[${qIndex}][audio]`, accept="audio/*")
+                      a(href=question[1], target="_blank")= question[1]
+
+                    // Câu trả lời
+                    td
+                      textarea(
+                          type='text'
+                          class='form-control'
+                          id=`answer-${qIndex}`
+                          name=`answers[${qIndex}][text]`
+                          rows='10'
+                          textarea-mce
+                          value=sample.answers[qIndex][0]
+                      ) !{sample.answers[qIndex][0]}
+                      if sample.answers[qIndex][1]
+                        audio.controls.mt-2
+                          source(src=sample.answers[qIndex][1], type="audio/mpeg")
+                      input.form-control.mt-2(type="file", name=`answers[${qIndex}][audio]`, accept="audio/*")
+                      a(href=sample.answers[qIndex][1], target="_blank")= sample.answers[qIndex][1]
+
+
+    div(class="form-group form-check form-check-inline")
+        input(
+            type="radio"
+            class="form-check-input"
+            id="statusActive"
+            name="status"
+            value="active"
+            checked=(sample.status == "active" ? true : false)
+        )
+        label(for="statusActive" class="form-check-label") Active
+
+    div(class="form-group form-check form-check-inline")
+        input(
+            type="radio"
+            class="form-check-input"
+            id="statusInActive"
+            name="status"
+            value="inactive"
+            checked=(sample.status == "inactive" ? true : false)
+        )
+        label(for="statusInActive" class="form-check-label") Inactive
+    div(class="form-group")
+        button(
+            type="submit"
+            class="btn btn-primary"
+        ) Update
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof initTinyMCE === 'function') {
+        initTinyMCE(); // hoặc initTinyMCEForNewTextareas()
+      }
+    });

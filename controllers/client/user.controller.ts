@@ -4,10 +4,13 @@ import md5 from 'md5';
 
 //GET /login
 export const login = (req: Request, res: Response) => {
+  const redirectUrl = req.query.redirect || '/dashboard';
   res.render('client/pages/user/login', {
-    pageTitle: 'Log in'
+    pageTitle: 'Log in',
+    redirect: redirectUrl,
   });
 }
+
 
 //POST /login
 export const loginPost = async(req: Request, res: Response) => {
@@ -29,17 +32,20 @@ export const loginPost = async(req: Request, res: Response) => {
   }
   if(md5(req.body.password) != user.password){
     req.flash('error', 'Wrong password!');
-    res.redirect('back');
+    res.redirect('/user/login');
     return;
   }
   if(user.status == 'inactive'){
     req.flash('error', 'The account has been locked!');
-    res.redirect('back');
+    res.redirect('/user/login');
     return;
   }
 
   res.cookie('tokenUser', user.tokenUser);
-  res.redirect('/');
+  const redirectUrl = req.body.redirect || '/dashboard';
+  console.log(redirectUrl);
+  res.redirect(redirectUrl);
+
 }
 
 // login bằng google
@@ -47,8 +53,13 @@ export const googleCallback = (req: Request, res: Response) => {
   const user = req.user as any;
   res.cookie('tokenUser', user.tokenUser);
   req.flash('success', 'Logged in with Google successfully!');
-  res.redirect('/dashboard');
+
+  const redirectUrl = req.query.state || '/dashboard'; // dùng state thay vì redirect
+  console.log('Google redirect:', redirectUrl);
+  res.redirect(redirectUrl as string);
 }
+
+
 
 // GET /register
 export const register = (req: Request, res: Response) => {
@@ -90,4 +101,19 @@ export const registerPost = async(req: Request, res: Response) => {
 export const logout = (req: Request, res: Response) => {
   res.clearCookie('tokenUser');
   res.redirect('/dashboard');
+}
+
+// GET /detail
+export const detail = async(req: Request, res: Response) => {
+  console.log(req.params.id);
+  const user = await User.findOne({
+    _id: req.params.id,
+    deleted: false,
+    status: 'active'
+  });
+
+  res.render('client/pages/user/detail', {
+    pageTitle: 'Detail',
+    user: user
+  })
 }

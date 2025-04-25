@@ -1,0 +1,31 @@
+extend ../../layouts/default.pug
+
+block main 
+    if (news.title)
+        h1(class="mb-4") #{news.title}
+
+    
+    if (news.img)
+        img(
+            src=news.img 
+            style="width: 100px"
+            )
+    
+    if (news.status)
+        div(class="mb-4") 
+            span Status 
+            if (news.status == "active")
+                span(class="badge badge-success") Active
+            else 
+                span(class="badge badge-danger") Inactive
+    
+    
+    if (news.content)
+        div(class="mb-4") !{news.content}
+    a(
+        href=`/${prefixAdmin}/news/edit/${news.slug}`
+        type="submit"
+        class="btn btn-warning"
+        ) Edit
+        
+

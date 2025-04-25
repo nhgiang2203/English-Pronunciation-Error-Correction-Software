@@ -140,7 +140,7 @@ li.sidebar-item-sub {
     border-width: 0 .075rem .075rem 0;
     content: "";
     display: inline-block;
-    padding: 2px;
+    padding: 1px;
     position: absolute;
     right: 1.5rem;
     top: 1.4rem;
@@ -148,10 +148,6 @@ li.sidebar-item-sub {
     transition: all .2s ease-out;
 }
 
-#sidebar a.sidebar-link[data-bs-toggle="collapse"].collapsed::after {
-    transform: rotate(45deg);
-    transition: all .2s ease-out;
-}
 /* End Sider */
 
 .table-responsive {
@@ -182,3 +178,105 @@ li.sidebar-item-sub {
     display: inline-block;
     vertical-align: top;
   }
+
+.arrow-icon {
+font-size: 0.4rem;
+margin-left: 10px;
+transition: transform 0.3s ease;
+display: inline-block;
+}
+
+  
+
+.sidebar-link[aria-expanded="true"] .arrow-icon {
+transform: rotate(180deg);
+}
+  
+/* Show Alert */
+[show-alert] {
+  position: fixed;
+  top: 70px;
+  right: 15px;
+  z-index: 9999;
+}
+
+[show-alert].alert-hidden {
+  animation-name: alert-hidden;
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+
+@keyframes alert-hidden {
+  from {
+    right: 15px;
+  }
+  to {
+    right: -100%;
+    display: none;
+  }
+}
+
+[show-alert] [close-alert] {
+  background: #ffffffc4;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  font-weight: 600;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.alert-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1050;
+  width: auto;
+  max-width: 350px;
+}
+
+/* End Show Alert */
+
+.fixed-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.fixed-table th:nth-child(1), /* No. */
+.fixed-table td:nth-child(1) {
+  width: 4%;
+  text-align: left;
+}
+
+.fixed-table th:nth-child(2), /* Title */
+.fixed-table td:nth-child(2) {
+  width: 10%;
+  word-wrap: break-word;
+}
+
+.fixed-table th:nth-child(3), /* Question */
+.fixed-table td:nth-child(3) {
+  width: 30%;
+}
+
+.fixed-table th:nth-child(4), /* Answer */
+.fixed-table td:nth-child(4) {
+  width: 35%;
+}
+
+.fixed-table th:nth-child(5), /* Status */
+.fixed-table td:nth-child(5) {
+  width: 8%;
+  text-align: left;
+}
+
+.fixed-table th:nth-child(6), /* Actions */
+.fixed-table td:nth-child(6) {
+  width: 13%;
+  text-align: left;
+}
+
+
+

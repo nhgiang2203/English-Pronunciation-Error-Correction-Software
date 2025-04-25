@@ -1,5 +1,5 @@
 header.header
-  .container
+  .container-fluid
     .row.align-items-center.justify-content-between
       .col-md-3.col-12.mb-2.mb-md-0
         .inner-logo.text-md-left.text-center
@@ -7,16 +7,16 @@ header.header
             img(src='/images/logo.svg', alt='logo', class='logo')
 
       .col-md-5.col-12.mb-2.mb-md-0
-        .box-search
-          form(action='/search/result', method='GET')
-            .form-group.d-flex.mb-0
-              input.form-search.form-control(
-                type='text',
-                name='keyword',
-                placeholder='Nhập từ khóa...',
-                value=keyword
-              )
-              button.btn.btn-primary.ml-2(type='submit') Search
+        .box-search-custom
+          form(action='/search/result', method='GET', class='search-form')
+            input.form-control.search-input(
+              type='text',
+              name='keyword',
+              placeholder='What are you looking for?',
+              value=keyword
+            )
+            button(type='submit', class='btn-search')
+              i.fa.fa-search
 
       .col-md-4.col-12
         .inner-menu.text-md-right.text-center
@@ -24,19 +24,37 @@ header.header
             li.list-inline-item
               a(href='/dashboard')
                 i.fa-solid.fa-house
-                |  Trang chủ
-            
+                |  Dashboard
+
+            li.list-inline-item.dropdown
+              a.dropdown-toggle(href='#', role='button')
+                i.fa-solid.fa-microphone-lines
+                |  Speaking
+
+              ul.dropdown-menu
+                li
+                  a.dropdown-item(href='/part1/index') Part 1
+                li
+                  a.dropdown-item(href='/part2/sample') Part 2
+
             if(!user)
               li.list-inline-item
                 a(href='/user/login')
                   i.fa-solid.fa-right-from-bracket
-                  |  Đăng nhập
-              li.list-inline-item
-                a(href='/user/register')
-                  i.fa-solid.fa-user-plus
-                  |  Đăng kí
+                  |  Sign in
             else
-              li.list-inline-item
-                a(href='/user/logout')
-                  i.fa-solid.fa-right-from-bracket
-                  |  Đăng xuất
+              li.user-menu.list-inline-item
+                button.user-toggle(type='button')
+                  if(user.avatar==null)
+                    img.avatar(src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp')
+                  else 
+                    img.avatar(src=user.avatar)
+                  span.username #{user.username}
+
+                .user-dropdown.hidden
+                  a.info-user(href=`/user/detail/${user.id}`)
+                    i.fa-solid.fa-circle-info
+                    |  Profile
+                  a.logout(href='/user/logout')
+                    i.fa-solid.fa-right-from-bracket
+                    |  Sign out

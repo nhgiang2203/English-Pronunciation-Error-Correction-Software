@@ -15,3 +15,12 @@ export const requireAuth = async(req: Request, res: Response, next: NextFunction
 
     next();
 }
+
+export const requireLogin = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.cookies.tokenUser) {
+      const redirectUrl = `/user/login?redirect=${encodeURIComponent(req.originalUrl)}`;
+      return res.redirect(redirectUrl);
+    }
+    next();
+  }
+  
