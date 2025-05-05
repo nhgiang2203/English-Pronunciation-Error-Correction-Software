@@ -37,8 +37,8 @@ block main
                         )
                         | Question
 
-                      p.mb-2= questionText
-                      div.d-none(id=`text-question-${index}`)= questionText
+                      p.mb-2 !{questionText}
+                      div.d-none(id=`text-question-${index}`) !{questionText}
 
                       .btn-group.mb-2(role="group")
                         button.btn.btn-sm.btn-outline-primary(
@@ -77,8 +77,8 @@ block main
                         )
                         | Answer
 
-                      p.mb-2= answerText
-                      div.d-none(id=`text-answer-${index}`)= answerText
+                      p.mb-2 !{answerText}
+                      div.d-none(id=`text-answer-${index}`) !{answerText}
 
                       .btn-group.mb-2(role="group")
                         button.btn.btn-sm.btn-outline-success(
@@ -104,3 +104,6 @@ block main
                       audio.controls.mt-2(id=`answer-audio-${index}`)
                         source(src=answerAudio, type="audio/mp4")
                       div.mt-3(id=`answer-result-${index}`)
+
+block script 
+  script(src="/js/part1.js") 

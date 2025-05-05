@@ -39,13 +39,15 @@ app.use(session({cookie: {maxAge: 60000}}));
 app.use(flash());
 
 // parser
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 // method-override
 app.use(methodOverride("_method"));
 
 // app local variable
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
+app.locals.moment = moment;
 
 // admin routes
 adminRoutes(app);

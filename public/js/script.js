@@ -14,23 +14,20 @@ if (showAlert) {
 }
 
 
-// // Confirm password
-// const registerForm = document.getElementById('register-form');
-// if (registerForm) {
-//   registerForm.addEventListener('submit', function (e) {
-//     const password = registerForm.querySelector('input[name="password"]').value;
-//     const confirmPassword = registerForm.querySelector('input[name="confirmPassword"]').value;
-//     const errorMsg = document.getElementById('error-message');
+// Show preview image
+const uploadImage = document.querySelector('[upload-image]');
+if (uploadImage) {
+  const uploadImageInput = uploadImage.querySelector('[upload-image-input]');
+  const avatarPreview = document.querySelector('#avatarPreview');
 
-//     if (password !== confirmPassword) {
-//       e.preventDefault();
-//       errorMsg.textContent = "❌ Password do not match!";
-//       errorMsg.style.display = "block";
-//     } else {
-//       errorMsg.style.display = "none";
-//     }
-//   });
-// }
+  uploadImageInput.addEventListener('change', (e) => {
+    if (e.target.files.length) {
+      const image = URL.createObjectURL(e.target.files[0]);
+      avatarPreview.src = image;
+    }
+  });
+}
+
 
 
 

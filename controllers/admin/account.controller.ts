@@ -12,12 +12,11 @@ export const login = (req: Request, res: Response) => {
 
 // POST /admin/account/login
 export const loginPost = async(req: Request, res: Response) => {
-  console.log(req.body.email);
-  console.log(req.body.password);
   const account = await Account.findOne({
     email: req.body.email,
     deleted: false
   });
+
 
   if(!account){
     req.flash('error', 'Email not exist!');

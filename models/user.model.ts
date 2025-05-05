@@ -29,11 +29,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  myAnswers: [{
-    topicId: String,
-    questionId: String,
-    answer: String
-  }],
   tokenUser: {
     type: String,
     default: generate.generateRandomString(20)
@@ -51,6 +46,10 @@ const userSchema = new mongoose.Schema({
     default: 'active'
   },
   deleted: {
+    type: Boolean,
+    default: false
+  },
+  verify: {
     type: Boolean,
     default: false
   }

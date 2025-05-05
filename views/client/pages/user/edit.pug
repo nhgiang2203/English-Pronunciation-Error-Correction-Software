@@ -1,0 +1,109 @@
+extend ../../layouts/default
+include ../../mixins/alert
+
+block styles 
+  link(rel="stylesheet", href="/css/settings.css")
+
+block main 
+  div.alert-container
+    +alert-success(5000)
+    +alert-error(5000)
+  form(action=`/user/edit/${user.id}?_method=PATCH` method='POST' enctype='multipart/form-data')
+    input#tabInput(type="hidden" name="tab" value=tab || 'account-general')
+    .container.light-style.flex-grow-1.container-p-y
+      h4.font-weight-bold.py-3.mb-4
+        | Account settings
+      .card.overflow-hidden
+        .row.no-gutters.row-bordered.row-border-light
+          .col-md-3.pt-0
+            .list-group.list-group-flush.account-settings-links
+              a.list-group-item.list-group-item-action.active(data-toggle='tab' href='#account-general') General
+              if user.googleId == null
+                a.list-group-item.list-group-item-action(data-toggle='tab' href='#account-change-password') Change password
+              a.list-group-item.list-group-item-action(data-toggle='tab' href='#account-social-links') Social links
+
+          .col-md-9
+            .tab-content
+              #account-general.tab-pane.fade.active.show
+                .card-body.media.align-items-center
+                  img#avatarPreview.rounded-circle.img-fluid(
+                    src=user.avatar || 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp'
+                    alt='avatar'
+                    style='width: 150px; height: 150px; object-fit: cover;'
+                  )
+
+                  .media-body.ml-4.form-group(upload-image)
+                    label.btn.btn-outline-primary(for='img') Upload new photo
+                    input#img(
+                      type='file'
+                      name='avt'
+                      accept='image/*'
+                      style='display: none;'
+                      upload-image-input
+                    )
+
+                hr.border-light.m-0
+                .card-body
+                  .form-group
+                    label.form-label Username
+                    input.form-control.mb-1(type='text' name='username' value=user.username)
+
+                  .form-group
+                    label.form-label E-mail
+                    input.form-control.mb-1(type='text' value=user.email name='email')
+                    input(type='text' name='id' value=user.id hidden)
+                    if user.verify == false
+                      .alert.alert-warning.mt-3
+                        | Your email is not confirmed. Please check your inbox.
+                        br
+                        button#sendOtpBtn.btn.btn-warning(type='button') Send OTP
+
+                        .form-group-otp
+                          label(for='otp') Enter OTP Code
+                          input#otp.form-control(type='text' name='otp' required placeholder='Enter 6-digit OTP')
+                          button#verifyOtpBtn.btn.btn-primary.mt-2(type='submit') Verify OTP
+
+
+                  .form-group
+                    label.form-label Phone
+                    input.form-control(type='text' value=user.phone name='phone')
+                  .form-group
+                    label.form-label Address
+                    input.form-control(type='text' value=user.address name='address')
+                  .form-group
+                    label.form-label Slogan
+                    input.form-control(type='text' value=user.slogan name='slogan')
+              
+              #account-change-password.tab-pane.fade
+                .card-body.pb-2
+                  .form-group
+                    label.form-label Current password
+                    input.form-control(type='password' name='password')
+                  .form-group
+                    label.form-label New password
+                    input.form-control(type='password' name='newPassword')
+                  .form-group
+                    label.form-label Repeat new password
+                    input.form-control(type='password' name='confirmPassword')  
+
+              #account-social-links.tab-pane.fade
+                .card-body.pb-2
+                  .form-group
+                    label.form-label Facebook
+                    input.form-control(type='text' value=user.facebook name='facebook')
+                  .form-group
+                    label.form-label Twitter
+                    input.form-control(type='text' value=user.twitter name='twitter')
+                  .form-group
+                    label.form-label Instagram
+                    input.form-control(type='text' value=user.instagram name='instagram')
+        
+
+
+
+      .text-center.mt-3
+        button#saveBtn.btn.btn-save.badge-success(type='submit') Save
+
+
+block script 
+  script(src="/js/settings.js") 

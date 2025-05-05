@@ -2,8 +2,9 @@ extends ../../../layouts/default.pug
 include ../../../mixins/alert.pug
 
 block main
-  +alert-success(5000)
-  +alert-error(5000)
+  div.alert-container
+      +alert-success(5000)
+      +alert-error(5000)
 
 
 

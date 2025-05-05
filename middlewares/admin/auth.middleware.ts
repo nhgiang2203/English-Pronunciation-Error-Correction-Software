@@ -5,7 +5,7 @@ import { systemConfig } from '../../config/system';
 export const requireAuth = async(req: Request, res: Response, next: NextFunction) => {
     if(req.cookies.token){
         const user = await Account.findOne({
-            tokenUser: req.cookies.tokenUser,
+            token: req.cookies.token,
             deleted: false,
             status: "active"
         }).select("-password");

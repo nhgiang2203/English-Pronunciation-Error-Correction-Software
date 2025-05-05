@@ -7,20 +7,46 @@ block main
   section(style='background-color: #eee;')
     .container.py-5
       .row
+        // Cột bên trái: avatar, thông tin, mạng xã hội
         .col-lg-4
           .card.mb-4
             .card-body.text-center
-              if(user.avatar==null)
-                img.rounded-circle.img-fluid(src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp' alt='avatar' style='width: 150px;')
-              else 
-                img.rounded-circle.img-fluid(src=user.avatar style='width: 150px;')
+              img#avatarPreview.rounded-circle.img-fluid(
+                src=user.avatar || 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp'
+                alt='avatar'
+                style='width: 150px; height: 150px; object-fit: cover;'
+              )
               h5.my-3 #{user.username}
               p.text-muted.mb-1 #{user.slogan || ''}
-              p.text-muted.mb-4 #{user.address || ''}
               .d-flex.justify-content-center.mb-2
                 button.btn.btn-primary(type='button') Follow
-                button.btn.btn-outline-primary.ms-1(type='button') Message
-          .card.mb-4.mb-lg-0
+
+          // Thông tin cá nhân
+          .card.mb-4
+            .card-body
+              .row.mb-3
+                .col-sm-4
+                  strong Username:
+                .col-sm-8
+                  span.text-muted #{user.username}
+              .row.mb-3
+                .col-sm-4
+                  strong Email:
+                .col-sm-8
+                  span.text-muted #{user.email}
+              .row.mb-3
+                .col-sm-4
+                  strong Phone:
+                .col-sm-8
+                  span.text-muted #{user.phone || '(empty)'}
+              .row
+                .col-sm-4
+                  strong Address:
+                .col-sm-8
+                  span.text-muted #{user.address || '(empty)'}
+
+          // Mạng xã hội
+          .card
             .card-body.p-0
               ul.list-group.list-group-flush.rounded-3
                 li.list-group-item.d-flex.justify-content-between.align-items-center.p-3
@@ -32,37 +58,51 @@ block main
                 li.list-group-item.d-flex.justify-content-between.align-items-center.p-3
                   i.fab.fa-facebook-f.fa-lg(style='color: #3b5998;')
                   p.mb-0 #{user.facebook || '(empty)'}
-        .col-lg-8
-          .card.mb-4
-            .card-body
-              .row
-                .col-sm-3
-                  p.mb-0 Username
-                .col-sm-9
-                  p.text-muted.mb-0 #{user.username}
-              hr
-              .row
-                .col-sm-3
-                  p.mb-0 Email
-                .col-sm-9
-                  p.text-muted.mb-0 #{user.email}
-              hr
-              .row
-                .col-sm-3
-                  p.mb-0 Phone
-                .col-sm-9
-                  p.text-muted.mb-0 #{user.phone || '(empty)'}
 
-              hr
-              .row
-                .col-sm-3
-                  p.mb-0 Address
-                .col-sm-9
-                  p.text-muted.mb-0 #{user.address || '(empty)'}
-          .row
-            .col-lg-12
-              .card.mb-4.mb-md-0
-                .card-body
-                  p.mb-4
-                    |  My answers
-                  
+        // Cột bên phải: các bài viết (answers)
+        .col-lg-8
+          .card
+            .card-body
+              if user.answers && user.answers.length > 0
+                each answer in user.answers
+                  .card.mb-4.shadow-sm
+                    .card-header.bg-light
+                      h5.mb-0.text-primary #{answer.topic}
+                      small.text-muted.mt-2.d-block Created at #{moment(answer.createdAt).format('DD/MM/YYYY')}
+
+                    .card-body
+                      h6.text-muted.mb-2 Question:
+                      p.card-text= answer.question
+
+                      h6.text-muted.mb-2 Answer:
+                      p.card-text !{answer.answer}
+
+                      h6.text-muted.mb-2 Highlighted sentence:
+                      p.card-text !{answer.pronunciationData.highlighted_sentence}
+
+                      h6.text-muted.mb-2 Highlighted IPA:
+                      p.card-text !{answer.pronunciationData.highlighted_ipa}
+
+                      .row.mb-3
+                        .col-md-6
+                          p.card-text.mb-1
+                            strong Score:
+                            |  #{answer.pronunciationData.score}
+                        .col-md-6
+                          p.card-text.mb-1
+                            strong Grammar:
+                            |  #{answer.suggestData.grammar_explanation}
+
+                      h6.text-muted.mb-2 Corrected Answer:
+                      p.card-text #{answer.suggestData.corrected_answer}
+
+                      h6.text-muted.mb-2 Relevance:
+                      p.card-text #{answer.suggestData.relevance}
+
+                      h6.text-muted.mb-2 Suggested Answer:
+                      p.card-text.text-primary-emphasis #{answer.suggestData.suggested_band_higher_answer}
+
+                      
+
+              else
+                p.text-muted No answers yet.

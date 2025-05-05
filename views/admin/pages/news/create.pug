@@ -1,8 +1,10 @@
 extend ../../layouts/default
+include ../../mixins/alert
 
 block main 
-  +alert-success(5000)
-  +alert-error(5000)
+  div.alert-container
+    +alert-success(5000)
+    +alert-error(5000)
   
   h1.mb-4 #{pageTitle}
 

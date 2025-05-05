@@ -219,9 +219,17 @@ function renderPronunciationFeedback(resultDiv, data) {
 
   // Lưu lại câu trả lời gốc để hiển thị trong form chỉnh sửa
   resultDiv.dataset.originalAnswer = data.text;
+  resultDiv.dataset.labelIpa = JSON.stringify(data.label_ipa);
+  resultDiv.dataset.errorIndexes = JSON.stringify(data.error_char_indexes);
+  resultDiv.dataset.wordScores = JSON.stringify(data.word_scores);
+  resultDiv.dataset.highlightedSentence = highlightedSentence;
+  resultDiv.dataset.highlightedIPA = highlightedIPA;
+  resultDiv.dataset.score = data.score;
+
 
   resultDiv.innerHTML = `
-    <div class="mt-2 border rounded p-2 bg-light">
+  <div class="mt-2 border rounded p-2 bg-light">
+    <div class="sentence-box">
       <div><strong>Câu gốc:</strong> ${highlightedSentence}</div>
       <div><strong>IPA:</strong> ${highlightedIPA}</div>
       <div><strong>Điểm tổng:</strong> 
@@ -230,7 +238,9 @@ function renderPronunciationFeedback(resultDiv, data) {
         </span>
       </div>
     </div>
-  `;
+  </div>
+`;
+
 }
 
 
@@ -258,7 +268,7 @@ function showImproveForm(resultDiv, originalText, questionText, type, index) {
 
 async function analyzeWithLLM(type, index) {
   const answerText = document.getElementById(`edit-answer-${type}-${index}`).value;
-  const questionText = document.getElementById(`question-${type}-${index}`)?.textContent || "";
+  const questionText = document.getElementById(`text-question-${index}`)?.textContent || "";
   const analysisDiv = document.getElementById(`llm-analysis-${type}-${index}`);
   const analyzeBtn = document.querySelector(`#edit-answer-${type}-${index} ~ button`);
 
@@ -267,32 +277,32 @@ async function analyzeWithLLM(type, index) {
   analyzeBtn.disabled = true;
 
   const llmPrompt = `
-You are an IELTS speaking evaluator and English grammar expert. A student has answered an IELTS Speaking Part 1 question.
+    You are an IELTS speaking evaluator and English grammar expert. A student has answered an IELTS Speaking Part 1 question.
 
-Your tasks are:
-1. Identify grammar and vocabulary mistakes in the student's answer.
-2. Provide a corrected version of the answer, keeping the original structure and wording as much as possible. Only fix grammar and vocabulary errors without rephrasing the sentence unless absolutely necessary.
-3. Explain the grammar or vocabulary corrections you made. If there are no mistakes, say "No grammar mistakes".
-4. Evaluate whether the answer is appropriate and relevant to the question.
-5. Suggest a better version of the answer that would score Band higher (you can freely rephrase here).
+    Your tasks are:
+    1. Identify grammar and vocabulary mistakes in the student's answer.
+    2. Provide a corrected version of the answer, keeping the original structure and wording as much as possible. Only fix grammar and vocabulary errors without rephrasing the sentence unless absolutely necessary.
+    3. Explain the grammar or vocabulary corrections you made. If there are no mistakes, say "No grammar mistakes".
+    4. Evaluate whether the answer is appropriate and relevant to the question.
+    5. Suggest a better version of the answer that would score Band higher (you can freely rephrase here).
 
-Return the result in this exact JSON format:
-{
-  "grammar_explanation": "<detailed explanation of corrections or 'No grammar mistakes'>",
-  "corrected_answer": "<the corrected version of the answer with same structure>",
-  "relevance": "<evaluate how well the answer addresses the question>",
-  "suggested_band_higher_answer": "<improved version for Band higher>"
-}
+    Return the result in this exact JSON format:
+    {
+      "grammar_explanation": "<detailed explanation of corrections or 'No grammar mistakes'>",
+      "corrected_answer": "<the corrected version of the answer with same structure>",
+      "relevance": "<evaluate how well the answer addresses the question>",
+      "suggested_band_higher_answer": "<improved version for Band higher>"
+    }
 
-Here is the input: Question: "${questionText}" 
-Student's answer: "${answerText}"
-`;
+    Here is the input: Question: "${questionText}" 
+    Student's answer: "${answerText}"
+  `;
 
   try {
     const res = await fetch("http://localhost:11434/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "mistral", prompt: llmPrompt, stream: true })
+      body: JSON.stringify({ model: "mistral", prompt: llmPrompt, stream: false })
     });
 
     const reader = res.body.getReader();
@@ -316,6 +326,8 @@ Student's answer: "${answerText}"
     }
 
     const analysis = JSON.parse(responseText);
+
+    // Hiển thị phân tích
     analysisDiv.innerHTML = `
       <div class="border rounded bg-light p-2">
         <div><strong>Sửa lỗi:</strong> ${analysis.grammar_explanation}</div>
@@ -324,12 +336,71 @@ Student's answer: "${answerText}"
         <div><strong>Gợi ý:</strong> ${analysis.suggested_band_higher_answer}</div>
       </div>
     `;
+
+    // Sau khi phân tích xong, tạo nút Save
+    const saveBtn = document.createElement("button");
+    saveBtn.className = "btn btn-success btn-sm mt-3";
+    saveBtn.textContent = "Lưu";
+
+    saveBtn.onclick = async () => {
+      const topic = document.getElementById("topicId").value;
+      const userId = document.getElementById("userId").value;
+      
+      // Lấy pronunciationData từ kết quả cũ renderPronunciationFeedback (nếu cần)
+      const resultDiv = document.getElementById(`${type}-result-${index}`);
+      const pronunciationData = {
+        highlighted_sentence: resultDiv.dataset.highlightedSentence || "",
+        highlighted_ipa: resultDiv.dataset.highlightedIPA || "",
+        answerOriginal: resultDiv.dataset.originalAnswer || "",
+        score: resultDiv.dataset.score ? parseFloat(resultDiv.dataset.score) : 0
+      };
+
+
+      const suggestData = {
+        grammar_explanation: analysis.grammar_explanation,
+        corrected_answer: analysis.corrected_answer,
+        relevance: analysis.relevance,
+        suggested_band_higher_answer: analysis.suggested_band_higher_answer
+      };
+
+      const myAnswer = {
+        topic,
+        questionText,
+        answerText,
+        pronunciationData: pronunciationData,
+        suggestData: suggestData
+      };
+
+      console.log(myAnswer);
+
+      try {
+        const saveRes = await fetch(`/user/my-answer/${userId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(myAnswer)
+        });
+
+        const saveResult = await saveRes.json();
+        if (saveResult.success) {
+          alert("Đã lưu thành công!");
+        } else {
+          alert("Lưu thất bại!");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Lỗi server khi lưu!");
+      }
+    };
+
+    analysisDiv.appendChild(saveBtn);
+
   } catch (err) {
-    analysisDiv.innerHTML = `<div class="text-danger">⚠️ Lỗi phân tích: ${err.message}</div>`;
+    console.error(err);
+    analysisDiv.innerHTML = `<div class="text-danger">Lỗi phân tích: ${err.message}</div>`;
   } finally {
-    // Reset nút
     analyzeBtn.textContent = "Gửi phân tích";
     analyzeBtn.disabled = false;
   }
 }
+
 
