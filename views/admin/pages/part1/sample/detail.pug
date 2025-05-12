@@ -5,11 +5,11 @@ block main
 
   if (sample.status)
         div(class="mb-4") 
-            span Status 
+            span Trạng thái
             if (sample.status == "active")
-                span(class="badge badge-success") Active
+                span(class="badge badge-success ml-2") Hoạt động
             else 
-                span(class="badge badge-danger") Inactive
+                span(class="badge badge-danger ml-2") Không hoạt động
 
   .card.shadow-sm.mb-4
     .card-body.p-0
@@ -18,9 +18,9 @@ block main
           table.table.table-hover.align-middle.fixed-table
             thead.table-light
               tr
-                th(scope='col') No.
-                th(scope='col') Question
-                th(scope='col') Answer
+                th(scope='col') STT
+                th(scope='col') Câu hỏi
+                th(scope='col') Câu trả lời
 
             tbody
               each question, qIndex in sample.questions
@@ -59,4 +59,4 @@ block main
     href=`/${prefixAdmin}/part1/sample/edit/${sample.slug}`
     type="submit"
     class="btn btn-warning"
-    ) Edit
+    ) Sửa

@@ -1,0 +1,53 @@
+extends ../../layouts/default
+include ../../mixins/box-head
+
+block main 
+  input(type="hidden", id="userId", value=loggedInUser.id)
+  input(type="hidden", id="topicId", value=topic.id)
+  input(type="hidden", id="topicTitle", value=topic.title)
+  input(type="hidden", id="topicContent", value=topic.content)
+
+  .container.my-4
+
+    //- Hiển thị nội dung câu hỏi (topic.content chứa suggest)
+    .card.border-success.shadow-sm.mb-3
+      .card-header.bg-success.text-white
+        i.fas.fa-user-tag.me-2
+        | #{topic.title}
+        div.d-none(id=`text-topic-${topic.id}`) !{topic.title}
+      .card-body
+        p.mb-0 !{topic.content} 
+
+    //- Ghi âm
+    p.text-muted.mt-3.mb-1.small
+      i.fas.fa-microphone-alt.me-1
+      | Ghi âm câu trả lời của bạn cho câu hỏi trên:
+
+    .d-flex.gap-2.flex-wrap.mb-2
+      button.btn.btn-sm.btn-outline-success(
+        id=`start-btn-${topic.id}`,
+        type="button",
+        onclick=`startRecording('${topic.id}')`
+      ) 🎙️ Ghi âm
+
+      button.btn.btn-outline-danger.btn-sm(
+        id=`stop-btn-${topic.id}`,
+        type="button",
+        onclick=`stopRecording('${topic.id}')`,
+        disabled
+      ) ⏹️ Dừng
+
+      button.btn.btn-outline-secondary.btn-sm(
+        id=`upload-btn-${topic.id}`,
+        type="button",
+        onclick=`uploadAudio('${topic.id}')`,
+        disabled
+      ) ⬆️ Gửi
+
+    audio.controls.mt-2.w-100(id=`audio-${topic.id}`)
+
+    //- Kết quả phát âm (JS sẽ insert vào đây)
+    div.mt-3(id=`answer-result-${topic.id}`)
+
+block script 
+  script(src="/js/part2.js")

@@ -7,10 +7,11 @@ block main
       +alert-error(5000)
 
 
+  div#initialData(data-qindex=sample.questions.length hidden)
 
   form(method="POST", action=`/${prefixAdmin}/part1/sample/edit/${sample.slug}?_method=PATCH`, enctype="multipart/form-data")
     div(class="form-group")
-            label(for="title") Title
+            label(for="title") Tiêu đề
             input(
                 type="text"
                 class="form-control"
@@ -26,11 +27,12 @@ block main
             table.table.table-bordered.align-middle
               thead.table-light
                 tr
-                  th(scope='col') No.
-                  th(scope='col') Question
-                  th(scope='col') Answer
+                  th(scope='col') STT
+                  th(scope='col') Câu hỏi
+                  th(scope='col') Câu trả lời
+                  th(scope='col') Hành động
 
-              tbody
+              tbody#questionTableBody
                 each question, qIndex in sample.questions
                   tr
                     td.align-middle= qIndex + 1
@@ -68,7 +70,18 @@ block main
                           source(src=sample.answers[qIndex][1], type="audio/mpeg")
                       input.form-control.mt-2(type="file", name=`answers[${qIndex}][audio]`, accept="audio/*")
                       a(href=sample.answers[qIndex][1], target="_blank")= sample.answers[qIndex][1]
+                    
+                    // Cột nút xoá
+                    td
+                      button.btn.btn-sm.btn-danger(type="button", onclick=`removeRow(this)`)
+                        i.fas.fa-trash
+                  
 
+
+        div.p-3
+          button.btn.btn-outline-primary(type="button", onclick="addQuestionRow()")
+            i.fas.fa-plus.me-1
+            | Thêm
 
     div(class="form-group form-check form-check-inline")
         input(
@@ -79,7 +92,7 @@ block main
             value="active"
             checked=(sample.status == "active" ? true : false)
         )
-        label(for="statusActive" class="form-check-label") Active
+        label(for="statusActive" class="form-check-label") Hoạt động
 
     div(class="form-group form-check form-check-inline")
         input(
@@ -90,12 +103,12 @@ block main
             value="inactive"
             checked=(sample.status == "inactive" ? true : false)
         )
-        label(for="statusInActive" class="form-check-label") Inactive
+        label(for="statusInActive" class="form-check-label") Không hoạt động
     div(class="form-group")
         button(
             type="submit"
             class="btn btn-primary"
-        ) Update
+        ) Cập nhật
 
 block scripts
   script.
@@ -104,3 +117,5 @@ block scripts
         initTinyMCE(); // hoặc initTinyMCEForNewTextareas()
       }
     });
+
+  script(src="/admin/js/sample.js") 

@@ -1,0 +1,18 @@
+extends ../../layouts/default
+
+block styles 
+  link(rel="stylesheet", href="/css/follower.css")
+
+block main 
+  .container.mt-5
+    h3.mb-4.text-primary Người theo dõi
+    if followers && followers.length > 0
+      .row
+        each acc in followers
+          .col-md-6.col-lg-4.mb-4
+            .follower-card.d-flex.align-items-center.p-3.rounded.shadow-sm
+              img.rounded-circle.mr-3(src=acc.avatar, alt='', width='60', height='60')
+              .info
+                a.text-dark.font-weight-bold(href=`/user/detail/${acc.id}`) #{acc.username}
+    else 
+      p.text-muted.text-center Không có người theo dõi nào.

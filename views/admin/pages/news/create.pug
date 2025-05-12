@@ -14,7 +14,7 @@ block main
     enctype="multipart/form-data"
   )
     .form-group 
-      label(for='title') Title 
+      label(for='title') Tiêu đề
       input(
         type='text'
         class='form-control'
@@ -26,7 +26,7 @@ block main
       class='form-group'
       upload-image
     )
-      label(for='img') Image 
+      label(for='img') Ảnh
       input(
         type='file'
         class='form-control-file'
@@ -42,7 +42,7 @@ block main
       )
 
     .form-group 
-      label(for='content') Content 
+      label(for='content') Nội dung
       textarea(
         type='text'
         class='form-control'
@@ -61,7 +61,7 @@ block main
         value='active'
         checked
       )
-      label(for='statusActive') Active
+      label(for='statusActive') Hoạt động
 
     div(class='form-group form-check form-check-inline')
       input(
@@ -71,13 +71,13 @@ block main
         name='status'
         value='inactive'
       )
-      label(for='statusInactive') Inactive 
+      label(for='statusInactive') Không hoạt động
     
     .form-group 
       button(
         type='submit'
         class='btn btn-primary'
-      ) ADD
+      ) Thêm
 
 block scripts
   script.

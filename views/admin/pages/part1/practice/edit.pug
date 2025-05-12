@@ -1,0 +1,98 @@
+extends ../../../layouts/default.pug
+include ../../../mixins/alert.pug
+
+block main
+  div.alert-container
+      +alert-success(5000)
+      +alert-error(5000)
+
+
+  div#initialData(data-qindex=practice.questions.length hidden)
+
+  form(method="POST", action=`/${prefixAdmin}/part1/practice/edit/${practice.slug}?_method=PATCH`, enctype="multipart/form-data")
+    div(class="form-group")
+            label(for="title") Tiêu đề
+            input(
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+                value=practice.title
+            )
+    .card.shadow-sm.mb-4
+      .card-body.p-0
+        .table-wrapper
+          .table-responsive
+            table.table.table-bordered.align-middle
+              thead.table-light
+                tr
+                  th(scope='col') STT
+                  th(scope='col') Câu hỏi
+                  th(scope='col') Hành động
+              tbody#questionTableBody
+                each question, qIndex in practice.questions
+                  tr
+                    td.align-middle= qIndex + 1
+                    td
+                      textarea(
+                          type='text'
+                          class='form-control'
+                          id=`question-${qIndex}`
+                          name=`questions[${qIndex}][text]`
+                          rows='10'
+                          textarea-mce
+                          value=question.text
+                      ) !{question.text}
+                      if question[1]
+                        audio.controls.mt-2
+                          source(src=question.audio, type="audio/mpeg")
+                      input.form-control.mt-2(type="file", name=`questions[${qIndex}][audio]`, accept="audio/*")
+                      a(href=question.audio, target="_blank")= question.audio
+                    td
+                      button.btn.btn-sm.btn-danger(type="button", onclick=`removeRow(this)`)
+                        i.fas.fa-trash
+
+        div.p-3
+          button.btn.btn-outline-primary(type="button", onclick="addQuestionRow()")
+            i.fas.fa-plus.me-1
+            | Thêm
+
+
+    div(class="form-group form-check form-check-inline")
+        input(
+            type="radio"
+            class="form-check-input"
+            id="statusActive"
+            name="status"
+            value="active"
+            checked=(practice.status == "active" ? true : false)
+        )
+        label(for="statusActive" class="form-check-label") Hoạt động
+
+    div(class="form-group form-check form-check-inline")
+        input(
+            type="radio"
+            class="form-check-input"
+            id="statusInActive"
+            name="status"
+            value="inactive"
+            checked=(practice.status == "inactive" ? true : false)
+        )
+        label(for="statusInActive" class="form-check-label") Không hoạt động
+    div(class="form-group")
+        button(
+            type="submit"
+            class="btn btn-primary"
+        ) Cập nhật
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof initTinyMCE === 'function') {
+        initTinyMCE(); 
+      }
+    });
+  
+  script(src="/admin/js/practice.js") 
+  

@@ -1,0 +1,24 @@
+extend ../../layouts/default.pug
+
+block main 
+    if (topic.title)
+        h1(class="mb-4") #{topic.title}
+
+    if (topic.status)
+        div(class="mb-4") 
+            span Status 
+            if (topic.status == "active")
+                span(class="badge badge-success ml-2") Hoạt động
+            else 
+                span(class="badge badge-danger ml-2") Không hoạt động
+    
+    
+    if (topic.content)
+        div(class="mb-4") !{topic.content}
+    a(
+        href=`/${prefixAdmin}/part2/edit/${topic.slug}`
+        type="submit"
+        class="btn btn-warning"
+        ) Sửa
+        
+

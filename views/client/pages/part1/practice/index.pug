@@ -3,7 +3,7 @@ include ../../../mixins/box-head
 
 block main 
   input(type="hidden", id="topicId", value=practice.title)
-  input(type="hidden", id="userId", value=user.id)
+  input(type="hidden", id="userId", value=loggedInUser.id)
   .container.my-4
     .row 
       .col-12 
@@ -19,7 +19,7 @@ block main
               data-bs-toggle="collapse", 
               data-bs-target=`#collapse-${index}`
             )
-              | 📝 Question #{index + 1}
+              | 📝 Câu hỏi #{index + 1}
 
           .accordion-collapse.collapse(id=`collapse-${index}`)
             .accordion-body
@@ -29,8 +29,9 @@ block main
                 .card-body
                   h6.text-info.mb-2
                     i.fas.fa-question-circle.me-1.text-info
-                    | Question
-                  p.mb-0(id=`text-question-${index}`) !{questionItem.text}
+                    | Câu hỏi
+                  p.mb-0 !{questionItem.text}
+                  div.d-none(id=`text-question-${index}`) !{questionItem.text}
 
               //- Ghi âm
               p.text-muted.mt-2.mb-1.small

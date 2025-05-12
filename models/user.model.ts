@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema({
     default: null
   },
   slogan: String,
+  follower: Array,
+  following: Array,
   facebook: {
     type: String,
     default: null
@@ -39,7 +41,7 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    default: null
+    default: 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp'
   },
   status: {
     type: String,

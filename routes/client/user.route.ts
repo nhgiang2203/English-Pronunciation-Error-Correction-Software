@@ -7,6 +7,7 @@ import passport from '../../config/passport';
 import * as validate from '../../validate/user.validate';
 import * as controller from '../../controllers/client/user.controller';
 import { uploadFields } from '../../middlewares/admin/uploadToCloudinary.middleware';
+import * as middleware from '../../middlewares/client/auth.middleware';
 
 route.get('/login', controller.login);
 route.post('/login', validate.loginPost, controller.loginPost);
@@ -32,11 +33,14 @@ route.get(
 route.get('/register', controller.register);
 route.post('/register', validate.registerPost, controller.registerPost);
 route.get('/logout', controller.logout);
-route.get('/detail/:id', controller.detail);
-route.get('/edit/:id', controller.edit);
-route.patch('/edit/:id', upload.fields([{name: 'avt', maxCount: 1}]), uploadFields, controller.editPatch);
-route.post('/otp/:id', controller.otpPost);
-route.post('/verify/:email', controller.verifyPost);
-route.post('/my-answer/:id', controller.myAnswerPost);
+route.get('/detail/:id', middleware.requireLogin, controller.detail);
+route.get('/edit/:id', middleware.requireLogin, controller.edit);
+route.patch('/edit/:id', middleware.requireLogin, upload.fields([{name: 'avt', maxCount: 1}]), uploadFields, controller.editPatch);
+route.post('/otp/:id', middleware.requireLogin, controller.otpPost);
+route.post('/verify/:email', middleware.requireLogin, controller.verifyPost);
+route.post('/my-answer/:id', middleware.requireLogin, controller.myAnswerPost);
+route.post('/isFollowing', middleware.requireLogin, controller.isFollowing);
+route.get('/follower/:id', middleware.requireLogin, controller.follower);
+route.get('/following/:id', middleware.requireLogin, controller.following);
 
 export const userRoutes: Router = route;

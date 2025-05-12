@@ -15,14 +15,14 @@ if (sendOtpBtn) {
       .then(res => res.json())
       .then(result => {
         if (result.success) {
-          alert('OTP has been sent to your email!');
+          alert('OTP đã gửi đến email của bạn!');
         } else {
-          alert('Failed to send OTP. Please try again.');
+          alert('Gửi OTP thất bại. Thử lại!');
         }
       })
       .catch(err => {
         console.error(err);
-        alert('An error occurred while sending OTP.');
+        alert('Lỗi gửi OTP!');
       });
   });
 }
@@ -46,15 +46,15 @@ if (verifyOtpBtn) {
       .then(res => res.json())
       .then(result => {
         if (result.success) {
-          alert('OTP verified successfully!');
+          alert('OTP xác thực thành công!');
           location.reload();
         } else {
-          alert('Incorrect OTP. Please try again.');
+          alert('Sai OTP. Thử lại!');
         }
       })
       .catch(err => {
         console.error(err);
-        alert('An error occurred during OTP verification.');
+        alert('Lỗi xác nhận OTP!');
       });
   });
 }

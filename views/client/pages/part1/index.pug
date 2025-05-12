@@ -15,7 +15,7 @@ block main
           .card-body.bg-light
             // Sample section
             .mb-5
-              h5.text-primary.mb-3 Sample
+              h5.text-primary.mb-3 Bài mẫu
               .row
                 each sample in samples
                   .col-md-4.mb-4
@@ -25,14 +25,14 @@ block main
                           a(href=`/part1/sample/${sample.slug}`, class="text-decoration-none text-primary fw-bold") #{sample.title}
 
             // Practice section
-            h5.text-primary.mb-3 Practice
+            h5.text-primary.mb-3 Bài luyện tập
             .row
               each practice in practices
                 .col-md-4.mb-4
                   .card.card-hover.shadow-sm.border-0.rounded-3
                     .card-body
                       h5.card-title.mb-0
-                        if user
+                        if loggedInUser
                           a(href=`/part1/practice/${practice.slug}`, class="text-decoration-none text-primary fw-bold") #{practice.title}
                         else
                           a(

@@ -1,0 +1,63 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+  div.alert-container
+      +alert-success(5000)
+      +alert-error(5000)
+
+  h1.mb-4 #{pageTitle}
+  form(method="POST", action=`/${prefixAdmin}/part2/create`)
+    .form-group 
+      label(for='title') Tiêu đề
+      input(
+        type='text'
+        class='form-control'
+        id='title'
+        name='title'
+        required
+      )
+
+    .form-group 
+      label(for='content') Nội dung 
+      textarea(
+        type='text'
+        class='form-control'
+        id='content'
+        name='content'
+        rows='10'
+        textarea-mce
+      )
+
+    div.form-group.form-check.form-check-inline.mt-4
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusActive"
+        name="status"
+        value="active"
+        checked
+      )
+      label(for="statusActive" class="form-check-label") Hoạt động
+
+    div.form-group.form-check.form-check-inline
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusInActive"
+        name="status"
+        value="inactive"
+      )
+      label(for="statusInActive" class="form-check-label") Không hoạt động
+
+    div.form-group.mt-4
+      button(type="submit" class="btn btn-success") Thêm
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof initTinyMCE === 'function') {
+        initTinyMCE(); 
+      }
+    });
+  

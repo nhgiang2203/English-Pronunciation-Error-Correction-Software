@@ -3,26 +3,24 @@ import Account from '../../models/account.model';
 import { systemConfig } from '../../config/system';
 
 export const requireAuth = async(req: Request, res: Response, next: NextFunction) => {
-    if(req.cookies.token){
-        const user = await Account.findOne({
-            token: req.cookies.token,
-            deleted: false,
-            status: "active"
-        }).select("-password");
-        if(user){
-            res.locals.user = user;
-            next();
-        } else {
-          res.redirect(`/${systemConfig.prefixAdmin}/account/login`);
-        }
+  if(req.cookies.token){
+      const user = await Account.findOne({
+          token: req.cookies.token,
+          deleted: false,
+          status: "active"
+      }).select("-password");
+      if(user){
+          res.locals.user = user;
+      }
+  }
 
-        
-    } else {
-      res.redirect(`/${systemConfig.prefixAdmin}/account/login`);
-    }
-
-    
+  next();
 }
 
-
-  
+export const requireLogin = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.cookies.token) {
+    const redirectUrl = `/${systemConfig.prefixAdmin}/account/login`;
+    return res.redirect(redirectUrl);
+  }
+  next();
+}

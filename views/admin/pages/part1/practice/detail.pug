@@ -1,0 +1,49 @@
+extends ../../../layouts/default.pug
+
+block main
+  h1.mb-4.text-primary #{pageTitle}
+
+  if (practice.status)
+        div(class="mb-4") 
+            span Trạng thái
+            if (practice.status == "active")
+                span(class="badge badge-success ml-2") Hoạt động
+            else 
+                span(class="badge badge-danger ml-2") Không hoạt động
+
+  .card.shadow-sm.mb-4
+    .card-body.p-0
+      .table-wrapper
+        .table-responsive
+          table.table.table-hover.align-middle.fixed-table
+            thead.table-light
+              tr
+                th(scope='col') STT
+                th(scope='col') Câu trả lời
+
+            tbody
+              each question, qIndex in practice.questions
+                tr
+                  // Số thứ tự câu hỏi
+                  td= qIndex + 1
+
+                  // Câu hỏi
+                  td.question-cell
+                    div.d-flex
+                      i.fas.fa-volume-up.me-1.text-primary(
+                              role="button", 
+                              onclick=`playAudio('${question.audio}')`
+                            )
+                      span.fw-semibold.text-dark !{question.text}
+                    if question.audio
+                      br
+                      small.text-muted
+                        a(href=question.audio, target="_blank")= question.audio
+
+                  
+
+  a(
+    href=`/${prefixAdmin}/part1/practice/edit/${practice.slug}`
+    type="submit"
+    class="btn btn-warning"
+    ) Sửa

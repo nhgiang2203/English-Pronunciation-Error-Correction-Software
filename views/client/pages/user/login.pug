@@ -15,25 +15,25 @@ block main
         img.image-1(src='/images/image-1.png' alt='')
         form#login-form(action='/user/login' method='POST')
           input(type='hidden', name='redirect', value=redirect)
-          h3 Welcome Back
+          h3 Chào mừng
           .form-holder
             span(class="fa fa-envelope")
             input.form-control(type='email' placeholder='Email' name='email' required)
           .form-holder
             span(class="fa fa-lock")
-            input.form-control(type='password' placeholder='Password' name='password' required)
+            input.form-control(type='password' placeholder='Mật khẩu' name='password' required)
 
           p#error-message.text-danger.mt-2(style="display: none; font-weight: bold")
 
           button(type='submit')
-            span Sign in
+            span Đăng nhập
 
           hr(style="margin: 30px 0;")
 
           a.btn.btn-lg.btn-block.text-white(style='background-color: #dd4b39;' href=`/user/auth/google?redirect=${redirect}`)
             i.fab.fa-google.me-2
-            |  Sign in with Google
+            | Đăng nhập Google
           p.mt-4.text-center
-            | New account? 
-            a(href='/user/register') Sign up here
+            | Tài khoản mới? 
+            a(href='/user/register') Đăng kí 
         img.image-2(src='/images/image-2.png' alt='')

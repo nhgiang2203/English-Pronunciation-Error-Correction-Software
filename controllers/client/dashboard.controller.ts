@@ -11,7 +11,7 @@ export const index = async (req: Request, res: Response) => {
   const activeNews = newsList[0]; // bài viết đầu tiên
 
   res.render('client/pages/dashboard/index', {
-    pageTitle: 'Dashboard',
+    pageTitle: 'Trang chủ',
     newsList,
     activeNews
   });
@@ -29,7 +29,7 @@ export const news = async (req: Request, res: Response) => {
   const activeNews = newsList.find(n => n.slug === slug); // tìm bài theo slug
 
   res.render('client/pages/dashboard/index', {
-    pageTitle: 'Dashboard',
+    pageTitle: 'Trang chủ',
     newsList,
     activeNews
   });

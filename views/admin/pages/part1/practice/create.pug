@@ -1,0 +1,70 @@
+extends ../../../layouts/default.pug
+include ../../../mixins/alert.pug
+
+block main
+  div.alert-container
+      +alert-success(5000)
+      +alert-error(5000)
+
+  h1.mb-4 #{pageTitle}
+  div#initialData(data-qindex=0 hidden)
+  form#sampleForm(method="POST", action=`/${prefixAdmin}/part1/practice/create`, enctype="multipart/form-data")
+    .form-group 
+      label(for='title') Tiêu đề
+      input(
+        type='text'
+        class='form-control'
+        id='title'
+        name='title'
+        required
+      )
+    .card.shadow-sm.mb-4
+      .card-body
+        .table-wrapper
+          .table-responsive
+            table.table.table-bordered.align-middle
+              thead.table-light
+                tr
+                  th(scope='col') STT
+                  th(scope='col') Câu hỏi
+                  th(scope='col') Câu trả lời
+
+              tbody#questionTableBody
+
+        button.btn.btn-outline-primary.mt-3(type="button", onclick="addQuestionRow()")
+          i.fas.fa-plus.me-1
+          | Thêm 
+
+    div.form-group.form-check.form-check-inline.mt-4
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusActive"
+        name="status"
+        value="active"
+        checked
+      )
+      label(for="statusActive" class="form-check-label") Hoạt động
+
+    div.form-group.form-check.form-check-inline
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusInActive"
+        name="status"
+        value="inactive"
+      )
+      label(for="statusInActive" class="form-check-label") Không hoạt động
+
+    div.form-group.mt-4
+      button(type="submit" class="btn btn-success") Thêm
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof initTinyMCE === 'function') {
+        initTinyMCE(); 
+      }
+    });
+  
+  script(src="/admin/js/practice.js") 

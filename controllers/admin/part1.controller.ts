@@ -12,7 +12,7 @@ export const indexSample = async(req: Request, res: Response) => {
 
   
   res.render('admin/pages/part1/sample/index', {
-    pageTitle: 'Sample',
+    pageTitle: 'Bài mẫu',
     samples: samples
   });
 }
@@ -38,7 +38,7 @@ export const editSample = async(req: Request, res: Response) => {
   });
 
   if(!sample){
-    req.flash('error', 'Sample not exist!');
+    req.flash('error', 'Bài mẫu không tồn tại!');
     res.redirect(`/${systemConfig.prefixAdmin}/part1/sample/index`);
   }
   res.render('admin/pages/part1/sample/edit', {
@@ -54,50 +54,55 @@ export const editSamplePatch = async (req: Request, res: Response) => {
   try {
     const sample = await Sample.findOne({ slug, deleted: false });
     if (!sample) {
-      req.flash('error', 'Sample not found!');
+      req.flash('error', 'Bài mẫu không tồn tại!');
       return res.redirect(`/${systemConfig.prefixAdmin}/part1/sample/edit/${slug}`);
     }
 
-    const body = qs.parse(req.body); // parse để đọc questions[0][text], v.v.
-    
-    const updatedQuestions: [string, string | null][] = [];
-    const updatedAnswers: [string, string | null][] = [];
+    const questions = req.body.questions || {};
+    const answers = req.body.answers || {};
 
-    const total = Object.keys(body.questions || {}).length;
+    const updatedQuestions = [];
+    const updatedAnswers = [];
 
-    for (let i = 0; i < total; i++) {
-      const qText = body.questions?.[i]?.text || '';
-      const aText = body.answers?.[i]?.text || '';
+    const indices = Object.keys(questions);
 
-      const qAudioUrl = body.questions?.[i]?.audio || sample.questions[i]?.[1] || null;
-      const aAudioUrl = body.answers?.[i]?.audio || sample.answers[i]?.[1] || null;
+    indices.forEach(index => {
+      const qText = questions[index]?.text || '';
+      console.log(qText);
+      const qAudio = req.body[`questions[${index}][audio]`] || sample.questions?.[index]?.[1] || '';
+      console.log(qAudio);
+      updatedQuestions.push([qText, qAudio]);
 
-      updatedQuestions.push([qText, qAudioUrl]);
-      updatedAnswers.push([aText, aAudioUrl]);
-    }
+      const aText = answers[index]?.text || '';
+      const aAudio = req.body[`answers[${index}][audio]`] || sample.answers?.[index]?.[1] || '';
+      updatedAnswers.push([aText, aAudio]);
+    });
+
 
     const sampleData = {
       title: req.body.title,
+      status: req.body.status,
       questions: updatedQuestions,
-      answers: updatedAnswers,
-      status: body.status
+      answers: updatedAnswers
     };
 
-    await Sample.updateOne({ _id: sample._id }, sampleData);
 
-    req.flash('success', 'Update successfully!');
+    await Sample.updateOne({ _id: sample._id }, sampleData);
+    req.flash('success', 'Cập nhật thành công!');
   } catch (error) {
     console.error(error);
-    req.flash('error', 'Update failed!');
+    req.flash('error', 'Cập nhật thất bại!');
   }
 
   res.redirect(`/${systemConfig.prefixAdmin}/part1/sample/edit/${slug}`);
 };
 
+
+
 //GET admin/part1/sample/create
 export const createSample = (req: Request, res: Response) => {
   res.render('admin/pages/part1/sample/create', {
-    pageTitle: 'Create'
+    pageTitle: 'Thêm bài mẫu'
   });
 }
 
@@ -106,6 +111,8 @@ export const createSamplePost = async(req: Request, res: Response) => {
   try{
     const questions = req.body.questions || {};
     const answers = req.body.answers || {};
+
+    console.log(questions);
 
 
     const ques = [];
@@ -133,9 +140,9 @@ export const createSamplePost = async(req: Request, res: Response) => {
     const newSample = new Sample(sampleData);
     await newSample.save();
 
-    req.flash('success', 'Create successfully!');
+    req.flash('success', 'Thêm thành công!');
   } catch(error){
-    req.flash('error', 'Create failed!');
+    req.flash('error', 'Thêm thất bại!');
   }
   
   res.redirect(`/${systemConfig.prefixAdmin}/part1/sample/create`);
@@ -146,4 +153,144 @@ export const deleteSample = async(req: Request, res: Response) => {
   const id = req.params.id;
   await Sample.deleteOne({_id: id});
   res.redirect(`/${systemConfig.prefixAdmin}/part1/sample/index`);
+}
+
+
+// Trang chủ Practice
+export const indexPractice = async(req: Request, res: Response) => {
+  const practices = await Practice.find({
+    deleted: false
+  });
+
+  
+  res.render('admin/pages/part1/practice/index', {
+    pageTitle: 'Bài luyện tập',
+    practices: practices
+  });
+}
+
+// GET /admin/part1/practice/detail
+export const detailPractice= async(req: Request, res: Response) => {
+  const practice = await Practice.findOne({
+    slug: req.params.slugPractice,
+    deleted: false
+  });
+
+  res.render('admin/pages/part1/practice/detail', {
+    pageTitle: practice.title,
+    practice: practice
+  });
+}
+
+// GET /admin/part1/practice/edit/:slugPractice
+export const editPractice = async(req: Request, res: Response) => {
+  const practice = await Practice.findOne({
+    slug: req.params.slugPractice,
+    deleted: false
+  });
+
+  if(!practice){
+    req.flash('error', 'Bài luyện tập không tồn tại!');
+    res.redirect(`/${systemConfig.prefixAdmin}/part1/practice/index`);
+  }
+  res.render('admin/pages/part1/practice/edit', {
+    pageTitle: practice.title,
+    practice: practice
+  });
+}
+
+//PATCH /admin/part1/practice/edit/:slugPractice
+export const editPracticePatch = async (req: Request, res: Response) => {
+  const slug = req.params.slugPractice;
+
+  try {
+    const practice = await Practice.findOne({ slug, deleted: false });
+    if (!practice) {
+      req.flash('error', 'Bài luyện tập không tồn tại!');
+      return res.redirect(`/${systemConfig.prefixAdmin}/part1/practice/edit/${slug}`);
+    }
+
+    const questions = req.body.questions || {};
+
+    const updatedQuestions = [];
+
+    const indices = Object.keys(questions);
+
+    indices.forEach(index => {
+      const qText = questions[index]?.text || '';
+      const qAudio = req.body[`questions[${index}][audio]`] || practice.questions[index]?.audio || '';
+    
+      updatedQuestions.push({
+        text: qText,
+        audio: qAudio
+      });
+    });
+    
+
+    const practiceData = {
+      title: req.body.title,
+      status: req.body.status,
+      questions: updatedQuestions
+    };
+
+
+    await Practice.updateOne({ _id: practice.id }, practiceData);
+    req.flash('success', 'Cập nhật thành công!');
+  } catch (error) {
+    console.error(error);
+    req.flash('error', 'Cập nhật thất bại!');
+  }
+
+  res.redirect(`/${systemConfig.prefixAdmin}/part1/practice/edit/${slug}`);
+};
+
+// GET /admin/part1/practice/create
+export const createPractice = (req: Request, res: Response) => {
+  res.render('admin/pages/part1/practice/create', {
+    pageTitle: 'Thêm bài luyện tập'
+  });
+}
+
+//POST /admin/part1/practice/create
+export const createPracticePost = async(req: Request, res: Response) => {
+  try{
+    const questions = req.body.questions || {};
+
+
+    const updatedQuestions = [];
+
+    const indices = Object.keys(questions);
+    indices.forEach(index => {
+      const qText = questions[index]?.text || '';
+      const qAudio = req.body[`questions[${index}][audio]`] || '';
+    
+      updatedQuestions.push({
+        text: qText,
+        audio: qAudio
+      });
+    });
+
+
+    const practiceData = {
+      title: req.body.title,
+      status: req.body.status,
+      questions: updatedQuestions
+    }
+
+    const newPractice = new Practice(practiceData);
+    await newPractice.save();
+
+    req.flash('success', 'Thêm thành công!');
+  } catch(error){
+    req.flash('error', 'Thêm thất bại!');
+  }
+  
+  res.redirect(`/${systemConfig.prefixAdmin}/part1/practice/create`);
+}
+
+// DELETE admin/part1/sample/delete/:id
+export const deletePractice = async(req: Request, res: Response) => {
+  const id = req.params.id;
+  await Practice.deleteOne({_id: id});
+  res.redirect(`/${systemConfig.prefixAdmin}/part1/practice/index`);
 }

@@ -6,18 +6,20 @@ block main
 
     
     if (news.img)
-        img(
-            src=news.img 
-            style="width: 100px"
-            )
+        div(class="text-center mb-4")
+            img(
+                src=news.img 
+                style="width: 500px"
+                class="img-fluid"
+                )
     
     if (news.status)
         div(class="mb-4") 
-            span Status 
+            span Trạng thái
             if (news.status == "active")
-                span(class="badge badge-success") Active
+                span(class="badge badge-success ml-2") Hoạt động
             else 
-                span(class="badge badge-danger") Inactive
+                span(class="badge badge-danger ml-2") Không hoạt động
     
     
     if (news.content)
@@ -26,6 +28,6 @@ block main
         href=`/${prefixAdmin}/news/edit/${news.slug}`
         type="submit"
         class="btn btn-warning"
-        ) Edit
+        ) Sửa
         
 

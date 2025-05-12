@@ -6,6 +6,7 @@ const upload = multer();
 
 import * as controller from "../../controllers/admin/news.controller";
 import * as uploadCloud from '../../middlewares/admin/uploadToCloudinary.middleware';
+import * as middleware from '../../middlewares/admin/auth.middleware';
 
 
 router.get('/index', controller.newsIndex);

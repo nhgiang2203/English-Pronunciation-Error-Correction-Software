@@ -1,61 +1,50 @@
 extends ../../layouts/default.pug
 
 block main 
-  h1(class='mb-4') #{pageTitle}
+  h1.mb-4.text-primary #{pageTitle}
 
-  .card.mb-3 
-    .card-header News List
-    .card-body 
-      .row.justify-content-end.mb-3
-        .col-auto
-          a(
-            href=`/${prefixAdmin}/news/create`
-            class="btn btn-outline-success"
-          ) + ADD
+  .card.shadow-sm.mb-4
+    .card-header.bg-light.d-flex.justify-content-between.align-items-center
+      span.fw-semibold.text-dark Danh sách bài báo
+      a.btn.btn-success(href=`/${prefixAdmin}/news/create`) + Thêm
 
-    .div.table-responsive
-      table.table.table-bordered.table-news
-        thead 
-          tr 
-            th(style='width: 50px; text-align: center;') No.
-            th(style='width: 200px;text-align: center;') Title
-            th(style='width: 120px; text-align: center;') Thumbnail
-            th(style='width: 400px;text-align: center;') Content
-            th(style='width: 100px; text-align: center;') Status
-            th(style='width: 180px; text-align: center;') Actions
-        
-        tbody 
-          each item, index in news
-            tr
-              td.text-center #{index+1}
-              td #{item.title}
-              td.text-center 
-                img(
-                  src=item.img 
-                  alt=item.title 
-                  width="150px"
-                  height="auto"
-                )
-              td.content-preview !{item.content}
-              td.text-center
-                if(item.status === 'active')
-                  a(href="javascript:;" class="badge badge-success") active 
-                else 
-                  a(href="javascript:;" class="badge badge-danger") inactive 
-              td.text-center
-                a(
-                  class="btn btn-secondary btn-sm"
-                  href=`/${prefixAdmin}/news/detail/${item.slug}`
-                ) Detail
-                a(
-                  class="btn btn-warning btn-sm ml-1"
-                  href=`/${prefixAdmin}/news/edit/${item.slug}`
-                ) Edit
-                button(
-                  class="btn btn-danger btn-sm ml-1"
-                  button-delete
-                  data-id=item.id
-                ) Del
+    .card-body.p-0
+      .table-wrapper
+        .table-responsive
+          table.table.table-hover.align-middle.fixed-table
+            thead.table-light
+              tr 
+                th(style='width: 50px; text-align: center;') STT
+                th(style='width: 200px;text-align: center;') Tiêu đề
+                th(style='width: 120px; text-align: center;') Ảnh
+                th(style='width: 400px;text-align: center;') Nội dung
+                th(style='width: 100px; text-align: center;') Trạng thái
+                th(style='width: 180px; text-align: center;') Hành động
+            
+            tbody 
+              each item, index in news
+                tr
+                  td.text-center #{index+1}
+                  td #{item.title}
+                  td.text-center 
+                    img(
+                      src=item.img 
+                      alt=item.title 
+                      width="150px"
+                      height="auto"
+                    )
+                  td.content-preview !{item.content}
+                  td.text-center
+                    if(item.status === 'active')
+                      a(href="javascript:;" class="badge badge-success") Hoạt động
+                    else 
+                      a(href="javascript:;" class="badge badge-danger") Không hoạt động
+                  td.align-middle.text-center
+                        .d-inline-flex.gap-2
+                          a.btn.btn-outline-secondary.btn-sm(href=`/${prefixAdmin}/news/detail/${item.slug}`) Chi tiết
+                          a.btn.btn-outline-warning.btn-sm(href=`/${prefixAdmin}/news/edit/${item.slug}`) Sửa
+                          button.btn.btn-outline-danger.btn-sm(button-delete data-id=item.id) Xóa
+
 
   form(
     action=''

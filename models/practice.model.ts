@@ -7,7 +7,8 @@ const practiceSchema = new mongoose.Schema({
   questions: [
     {
       _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId() },
-      text: String
+      text: String,
+      audio: String
     }
   ],
   status: String,

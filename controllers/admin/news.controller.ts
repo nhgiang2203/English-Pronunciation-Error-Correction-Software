@@ -11,7 +11,7 @@ export const newsIndex = async(req: Request, res: Response) => {
 
 
   res.render(`${systemConfig.prefixAdmin}/pages/news/index`, {
-    pageTitle: 'News',
+    pageTitle: 'Bài báo',
     news: news
   });
 }
@@ -19,7 +19,7 @@ export const newsIndex = async(req: Request, res: Response) => {
 // GET /news/create
 export const newsCreate = (req: Request, res: Response) => {
   res.render(`${systemConfig.prefixAdmin}/pages/news/create`, {
-    pageTitle: 'Create news'
+    pageTitle: 'Thêm bài báo'
   });
 }
 
@@ -50,7 +50,7 @@ export const detail = async(req: Request, res: Response) => {
     deleted: false
   });
   if (!news) {
-    req.flash('error', 'News not found!');
+    req.flash('error', 'Bài báo không tồn tại!');
     return res.redirect(`/${systemConfig.prefixAdmin}/news/index`);
   }
   res.render('admin/pages/news/detail', {
@@ -67,7 +67,7 @@ export const edit = async(req: Request, res: Response) => {
   });
 
   if (!news) {
-    req.flash('error', 'News not found!');
+    req.flash('error', 'Bài báo không tồn tại!');
     return res.redirect(`/${systemConfig.prefixAdmin}/news/index`);
   }
 
@@ -101,9 +101,9 @@ export const editPatch = async(req: Request, res: Response) => {
     }
 
     await News.updateOne({_id: news.id}, newsData);
-    req.flash('success', 'Update successfully!');
+    req.flash('success', 'Cập nhật thành công!');
   } catch(error){
-    req.flash('error', 'Update failed!');
+    req.flash('error', 'Cập nhật thất bại!');
   }
   res.redirect(`/${systemConfig.prefixAdmin}/news/edit/${req.params.slugNews}`);
 }

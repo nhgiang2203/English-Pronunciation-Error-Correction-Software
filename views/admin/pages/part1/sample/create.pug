@@ -7,7 +7,7 @@ block main
       +alert-error(5000)
 
   h1.mb-4 #{pageTitle}
-
+  div#initialData(data-qindex=0 hidden)
   form#sampleForm(method="POST", action=`/${prefixAdmin}/part1/sample/create`, enctype="multipart/form-data")
     .form-group 
       label(for='title') Title 
@@ -25,16 +25,16 @@ block main
             table.table.table-bordered.align-middle
               thead.table-light
                 tr
-                  th(scope='col') No.
-                  th(scope='col') Question
-                  th(scope='col') Answer
-                  th(scope='col') Actions
+                  th(scope='col') STT
+                  th(scope='col') Câu hỏi
+                  th(scope='col') Câu trả lời
+                  th(scope='col') Hành động
 
               tbody#questionTableBody
 
         button.btn.btn-outline-primary.mt-3(type="button", onclick="addQuestionRow()")
           i.fas.fa-plus.me-1
-          | Add Question
+          | Thêm
 
     div.form-group.form-check.form-check-inline.mt-4
       input(
@@ -45,7 +45,7 @@ block main
         value="active"
         checked
       )
-      label(for="statusActive" class="form-check-label") Active
+      label(for="statusActive" class="form-check-label") Hoạt động
 
     div.form-group.form-check.form-check-inline
       input(
@@ -55,10 +55,10 @@ block main
         name="status"
         value="inactive"
       )
-      label(for="statusInActive" class="form-check-label") Inactive
+      label(for="statusInActive" class="form-check-label") Không hoạt động
 
     div.form-group.mt-4
-      button(type="submit" class="btn btn-success") Create
+      button(type="submit" class="btn btn-success") Thêm
 
 block scripts
   script.
@@ -67,3 +67,5 @@ block scripts
         initTinyMCE(); 
       }
     });
+  
+  script(src="/admin/js/sample.js") 

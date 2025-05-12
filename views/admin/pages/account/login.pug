@@ -22,16 +22,16 @@ block main
           .card.bg-dark.text-white(style='border-radius: 1rem;')
             .card-body.p-5.text-center
               .mb-md-5.mt-md-4.pb-5
-                h2.fw-bold.mb-2.text-uppercase Sign in
-                p.text-white-50.mb-5 Please enter your sign in and password!
+                h2.fw-bold.mb-2.text-uppercase Đăng nhập
+                p.text-white-50.mb-5 Vui lòng nhập email và mật khẩu!
                 form(action=`/${prefixAdmin}/account/login` method='POST')
                   .form-outline.form-white.mb-4
                     input#typeEmailX.form-control.form-control-lg(type='email' name='email')
                     label.form-label(for='typeEmailX') Email
                   .form-outline.form-white.mb-4
                     input#typePasswordX.form-control.form-control-lg(type='password' name='password')
-                    label.form-label(for='typePasswordX') Password
+                    label.form-label(for='typePasswordX') Mật khẩu
                   p.small.mb-5.pb-lg-2
-                    a.text-white-50(href='#!') Forgot password?
-                  button.btn.btn-outline-light.btn-lg.px-5(type='submit') Sign in
+                    a.text-white-50(href='#!') Quên mật khẩu?
+                  button.btn.btn-outline-light.btn-lg.px-5(type='submit') Đăng nhập
 

@@ -1,4 +1,35 @@
 extend ../../layouts/default.pug
 
-block main 
-  h1 Trang tổng quan
+block main
+  .dashboard-wrapper
+    .dashboard-left
+      .header-with-filter(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem")
+        h2 Số lượng người đăng kí
+        .dropdown.relative
+          select#viewSelector
+            option(value="year") Theo năm
+            option(value="month" selected) Theo tháng
+      canvas#saveChart(width="600" height="300" style="margin-bottom: 2rem")
+
+    
+    .dashboard-right
+      .stat-grid
+        .stat-card(style="background:#ff7ca3")
+          h3= samples
+          p Số bài Sample
+
+        .stat-card(style="background:#5ed0fb")
+          h3= practices
+          p Số bài Practice
+
+        .stat-card(style="background:#bc7af9")
+          h3= part2s
+          p Số bài Part 2
+
+        .stat-card(style="background:#d7d7d7")
+          h3= news
+          p Bài báo
+
+block scripts 
+  script(src="https://cdn.jsdelivr.net/npm/chart.js")
+  script(src="/admin/js/dashboard.js") 

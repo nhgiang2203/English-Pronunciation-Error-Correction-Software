@@ -9,7 +9,17 @@ const accountSchema = new mongoose.Schema({
     type: String,
     default: generate.generateRandomString(20)
   },
-  avt: String,
+  avatar: {
+    type: String,
+    default: 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp'
+  },
+  phone: String,
+  address: String,
+  role: String,
+  verify: {
+    type: Boolean,
+    default: false
+  },
   status: String,
   deleted: {
     type: Boolean,

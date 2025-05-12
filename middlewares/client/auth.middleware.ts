@@ -9,7 +9,7 @@ export const requireAuth = async(req: Request, res: Response, next: NextFunction
             status: "active"
         }).select("-password");
         if(user){
-            res.locals.user = user;
+            res.locals.loggedInUser = user;
         }
     }
 

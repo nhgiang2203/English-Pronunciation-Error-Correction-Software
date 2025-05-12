@@ -12,15 +12,15 @@ block main
     input#tabInput(type="hidden" name="tab" value=tab || 'account-general')
     .container.light-style.flex-grow-1.container-p-y
       h4.font-weight-bold.py-3.mb-4
-        | Account settings
+        | Cài đặt tài khoản
       .card.overflow-hidden
         .row.no-gutters.row-bordered.row-border-light
           .col-md-3.pt-0
             .list-group.list-group-flush.account-settings-links
-              a.list-group-item.list-group-item-action.active(data-toggle='tab' href='#account-general') General
+              a.list-group-item.list-group-item-action.active(data-toggle='tab' href='#account-general') Cài đặt chung
               if user.googleId == null
-                a.list-group-item.list-group-item-action(data-toggle='tab' href='#account-change-password') Change password
-              a.list-group-item.list-group-item-action(data-toggle='tab' href='#account-social-links') Social links
+                a.list-group-item.list-group-item-action(data-toggle='tab' href='#account-change-password') Đổi mật khẩu
+              a.list-group-item.list-group-item-action(data-toggle='tab' href='#account-social-links') Mạng xã hội
 
           .col-md-9
             .tab-content
@@ -33,7 +33,7 @@ block main
                   )
 
                   .media-body.ml-4.form-group(upload-image)
-                    label.btn.btn-outline-primary(for='img') Upload new photo
+                    label.btn.btn-outline-primary(for='img') Tải ảnh mới
                     input#img(
                       type='file'
                       name='avt'
@@ -45,7 +45,7 @@ block main
                 hr.border-light.m-0
                 .card-body
                   .form-group
-                    label.form-label Username
+                    label.form-label Tên người dùng
                     input.form-control.mb-1(type='text' name='username' value=user.username)
 
                   .form-group
@@ -54,21 +54,21 @@ block main
                     input(type='text' name='id' value=user.id hidden)
                     if user.verify == false
                       .alert.alert-warning.mt-3
-                        | Your email is not confirmed. Please check your inbox.
+                        | Email chưa xác nhận. Xác nhận ngay tại đây!
                         br
-                        button#sendOtpBtn.btn.btn-warning(type='button') Send OTP
+                        button#sendOtpBtn.btn.btn-warning(type='button') Gửi OTP
 
                         .form-group-otp
-                          label(for='otp') Enter OTP Code
+                          label(for='otp') Nhập mã OTP
                           input#otp.form-control(type='text' name='otp' required placeholder='Enter 6-digit OTP')
-                          button#verifyOtpBtn.btn.btn-primary.mt-2(type='submit') Verify OTP
+                          button#verifyOtpBtn.btn.btn-primary.mt-2(type='submit') Xác thực
 
 
                   .form-group
-                    label.form-label Phone
+                    label.form-label Số điện thoại
                     input.form-control(type='text' value=user.phone name='phone')
                   .form-group
-                    label.form-label Address
+                    label.form-label Địa chỉ
                     input.form-control(type='text' value=user.address name='address')
                   .form-group
                     label.form-label Slogan
@@ -77,13 +77,13 @@ block main
               #account-change-password.tab-pane.fade
                 .card-body.pb-2
                   .form-group
-                    label.form-label Current password
+                    label.form-label Mật khẩu hiện tại
                     input.form-control(type='password' name='password')
                   .form-group
-                    label.form-label New password
+                    label.form-label Mật khẩu mới
                     input.form-control(type='password' name='newPassword')
                   .form-group
-                    label.form-label Repeat new password
+                    label.form-label Nhập lại mật khẩu
                     input.form-control(type='password' name='confirmPassword')  
 
               #account-social-links.tab-pane.fade
@@ -92,17 +92,18 @@ block main
                     label.form-label Facebook
                     input.form-control(type='text' value=user.facebook name='facebook')
                   .form-group
-                    label.form-label Twitter
-                    input.form-control(type='text' value=user.twitter name='twitter')
-                  .form-group
                     label.form-label Instagram
                     input.form-control(type='text' value=user.instagram name='instagram')
+                  .form-group
+                    label.form-label Twitter
+                    input.form-control(type='text' value=user.twitter name='twitter')
+                  
         
 
 
 
       .text-center.mt-3
-        button#saveBtn.btn.btn-save.badge-success(type='submit') Save
+        button#saveBtn.btn.btn-save.badge-success(type='submit') Lưu
 
 
 block script 

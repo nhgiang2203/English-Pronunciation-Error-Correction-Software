@@ -1,0 +1,52 @@
+extends ../../layouts/default.pug
+
+block main
+  h1.mb-4.text-primary #{pageTitle}
+
+  .card.shadow-sm.mb-4
+    .card-header.bg-light.d-flex.justify-content-between.align-items-center
+      span.fw-semibold.text-dark Danh sách Part 2
+      a.btn.btn-success(href=`/${prefixAdmin}/part2/create`) + Thêm
+
+    .card-body.p-0
+      .table-wrapper
+        .table-responsive
+          table.table.table-hover.align-middle.fixed-table
+            thead.table-light
+              tr
+                th(scope='col') STT
+                th(scope='col') Tiêu đề
+                th(scope='col') Nội dung
+                th(scope='col') Trạng thái
+                th(scope='col') Hành động
+
+            tbody
+              each item, itemIndex in topics
+                tr
+                  td.align-middle= itemIndex + 1
+                  td.align-middle.fw-bold= item.title
+
+                  td.question-cell
+                    div.d-flex
+                      span !{item.content}
+
+
+                  td.align-middle
+                    if item.status == 'active'
+                      span.badge.bg-success.px-3.py-2 Hoạt động
+                    else
+                      span.badge.bg-danger.px-3.py-2 Không hoạt động
+
+                  td.align-middle
+                    .d-inline-flex.gap-2
+                      a.btn.btn-outline-secondary.btn-sm(href=`/${prefixAdmin}/part2/detail/${item.slug}`) Chi tiết
+                      a.btn.btn-outline-warning.btn-sm(href=`/${prefixAdmin}/part2/edit/${item.slug}`) Sửa
+                      button.btn.btn-outline-danger.btn-sm(button-delete data-id=item.id) Xóa
+
+
+  form(
+    action=''
+    method='POST'
+    id='form-delete-item'
+    data-path=`/${prefixAdmin}/part2/delete`
+  )

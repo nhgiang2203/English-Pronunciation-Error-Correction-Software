@@ -1,0 +1,47 @@
+extends ../../layouts/default
+
+block styles
+  link(rel='stylesheet', href='/css/bootstrap-profiles.min.css')
+
+block main 
+  section(style='background-color: #eee;')
+    .container.py-5
+      .row
+        // Cột bên trái: avatar, thông tin, mạng xã hội
+        .col-lg-4
+          .card.mb-4
+            .card-body.text-center
+              img#avatarPreview.rounded-circle.img-fluid(
+                src=account.avatar || 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp'
+                alt='avatar'
+                style='width: 150px; height: 150px; object-fit: cover;'
+              )
+              h5.my-3 #{account.username}
+              p.text-muted.mb-1 #{account.role || ''}
+
+          // Thông tin cá nhân
+        .col-lg-8
+          .card.mb-4
+            .card-body
+              .row.mb-3
+                .col-sm-4
+                  strong Tên người dùng:
+                .col-sm-8
+                  span.text-muted #{account.username}
+              .row.mb-3
+                .col-sm-4
+                  strong Email:
+                .col-sm-8
+                  span.text-muted #{account.email}
+              .row.mb-3
+                .col-sm-4
+                  strong Số điện thoại:
+                .col-sm-8
+                  span.text-muted #{account.phone || '(empty)'}
+              .row
+                .col-sm-4
+                  strong Địa chỉ:
+                .col-sm-8
+                  span.text-muted #{account.address || '(empty)'}
+
+          

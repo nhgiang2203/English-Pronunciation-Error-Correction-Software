@@ -1,0 +1,95 @@
+extend ../../layouts/default
+include ../../mixins/alert
+
+block styles 
+  link(rel="stylesheet", href="/admin/css/settings.css")
+
+block main 
+  div.alert-container
+    +alert-success(5000)
+    +alert-error(5000)
+  form(action=`/admin/account/edit/${account.id}?_method=PATCH` method='POST' enctype='multipart/form-data')
+    input#tabInput(type="hidden" name="tab" value=tab || 'account-general')
+    .container.light-style.flex-grow-1.container-p-y
+      h4.font-weight-bold.py-3.mb-4.text-primary
+        | Cài đặt tài khoản
+      .card.overflow-hidden
+        .row.no-gutters.row-bordered.row-border-light
+          .col-md-3.pt-0
+            .list-group.list-group-flush.account-settings-links
+              a.list-group-item.list-group-item-action.active(data-toggle='tab' href='#account-general') Cài đặt chung
+              a.list-group-item.list-group-item-action(data-toggle='tab' href='#account-change-password') Đổi mật khẩu
+
+
+          .col-md-9
+            .tab-content
+              #account-general.tab-pane.fade.active.show
+                .card-body.media.align-items-center
+                  img#avatarPreview.rounded-circle.img-fluid(
+                    src=account.avatar || 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp'
+                    alt='avatar'
+                    style='width: 150px; height: 150px; object-fit: cover;'
+                  )
+
+                  .media-body.ml-4.form-group(upload-avt)
+                    label.btn.btn-outline-primary(for='img') Tải ảnh mới
+                    input#img(
+                      type='file'
+                      name='avt'
+                      accept='image/*'
+                      style='display: none;'
+                      upload-image-input
+                    )
+
+                hr.border-light.m-0
+                .card-body
+                  .form-group
+                    label.form-label Tên người dùng
+                    input.form-control.mb-1(type='text' name='username' value=account.username)
+
+                  .form-group
+                    label.form-label E-mail
+                    input.form-control.mb-1(type='text' value=account.email name='email')
+                    input(type='text' name='id' value=account.id hidden)
+                    if account.verify == false
+                      .alert.alert-warning.mt-3
+                        | Email của bạn chưa được xác nhận. Xác nhận ngay ở đây.
+                        br
+                        button#sendOtpBtn.btn.btn-warning(type='button') Gửi OTP
+
+                        .form-group-otp
+                          label(for='otp') Nhập mã OTP 
+                          input#otp.form-control(type='text' name='otp' required placeholder='Enter 6-digit OTP')
+                          button#verifyOtpBtn.btn.btn-primary.mt-2(type='submit') Xác nhận OTP
+
+
+                  .form-group
+                    label.form-label Số điện thoại
+                    input.form-control(type='text' value=account.phone name='phone')
+                  .form-group
+                    label.form-label Địa chỉ
+                    input.form-control(type='text' value=account.address name='address')
+
+              
+              #account-change-password.tab-pane.fade
+                .card-body.pb-2
+                  .form-group
+                    label.form-label Mật khẩu hiện tại
+                    input.form-control(type='password' name='password')
+                  .form-group
+                    label.form-label Mật khẩu mới
+                    input.form-control(type='password' name='newPassword')
+                  .form-group
+                    label.form-label Xác nhận mật khẩu
+                    input.form-control(type='password' name='confirmPassword')  
+
+              
+
+
+
+      .text-center.mt-3
+        button#saveBtn.btn.btn-save.badge-success(type='submit') Lưu
+
+
+block scripts
+  script(src="/admin/js/settings.js") 

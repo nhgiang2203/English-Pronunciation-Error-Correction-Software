@@ -12,11 +12,13 @@ header.header
             input.form-control.search-input(
               type='text',
               name='keyword',
-              placeholder='What are you looking for?',
+              placeholder='Tìm kiếm...',
               value=keyword
             )
             button(type='submit', class='btn-search')
               i.fa.fa-search
+            .inner-suggest 
+              .inner-list
 
       .col-md-4.col-12
         .inner-menu.text-md-right.text-center
@@ -24,45 +26,45 @@ header.header
             li.list-inline-item
               a(href='/dashboard')
                 i.fa-solid.fa-house
-                |  Dashboard
+                |  Trang chủ
 
             // Speaking Dropdown
             li.list-inline-item.dropdown
               a.dropdown-toggle(href='#', id='speakingDropdown', role='button', data-bs-toggle='dropdown', aria-expanded='false')
                 i.fa-solid.fa-microphone-lines
-                |  Speaking
+                |  Luyện nói
               ul.dropdown-menu(aria-labelledby='speakingDropdown')
                 li
                   a.dropdown-item(href='/part1/index') Part 1
                 li
-                  a.dropdown-item(href='/part2/sample') Part 2
+                  a.dropdown-item(href='/part2/index') Part 2
 
-            if (!user)
+            if (!loggedInUser)
               li.list-inline-item
                 a(href='/user/login')
                   i.fa-solid.fa-right-from-bracket
-                  |  Sign in
+                  |  Đăng nhập
             else
               // User Avatar Dropdown
               li.list-inline-item.dropdown
                 a.dropdown-toggle(href='#', id='userDropdown', role='button', data-bs-toggle='dropdown', aria-expanded='false')
-                  if (user.avatar == null)
+                  if (loggedInUser.avatar == null)
                     img.avatar(src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp', class='rounded-circle', style='width:32px;height:32px;object-fit:cover;')
                   else 
-                    img.avatar(src=user.avatar, class='rounded-circle', style='width:32px;height:32px;object-fit:cover;')
-                  span.username.ms-2 #{user.username}
+                    img.avatar(src=loggedInUser.avatar, class='rounded-circle', style='width:32px;height:32px;object-fit:cover;')
+                  span.username.ms-2 #{loggedInUser.username}
                 ul.dropdown-menu.dropdown-menu-end(aria-labelledby='userDropdown')
                   li
-                    a.dropdown-item(href=`/user/detail/${user.id}`)
+                    a.dropdown-item(href=`/user/detail/${loggedInUser.id}`)
                       i.fa-solid.fa-circle-info
-                      |  Profile
+                      |  Trang cá nhân
                   li
-                    a.dropdown-item(href=`/user/edit/${user.id}`)
+                    a.dropdown-item(href=`/user/edit/${loggedInUser.id}`)
                       i.fa-solid.fa-gear
-                      |  Settings
+                      |  Cài đặt
                   li
                     hr.dropdown-divider
                   li
                     a.dropdown-item(href='/user/logout')
                       i.fa-solid.fa-right-from-bracket
-                      |  Sign out
+                      |  Đăng xuất

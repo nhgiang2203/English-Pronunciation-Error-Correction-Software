@@ -1,0 +1,73 @@
+extend ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+
+block main 
+    div.alert-container
+      +alert-success(5000)
+      +alert-error(5000)
+
+
+    form(
+        action=`/${prefixAdmin}/part2/edit/${topic.slug}?_method=PATCH`
+        method="POST"
+    )
+        div(class="form-group")
+            label(for="title") Tiêu đề
+            input(
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                required
+                value=topic.title
+            )
+        
+
+        div(class="form-group")
+            label(for="desc") Nội dung
+            textarea(
+                type='text'
+                class='form-control'
+                id='content'
+                name='content'
+                rows='10'
+                textarea-mce
+                value=topic.content
+            ) !{topic.content}
+
+
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusActive"
+                name="status"
+                value="active"
+                checked=(topic.status == "active" ? true : false)
+            )
+            label(for="statusActive" class="form-check-label") Hoạt động
+
+        div(class="form-group form-check form-check-inline")
+            input(
+                type="radio"
+                class="form-check-input"
+                id="statusInActive"
+                name="status"
+                value="inactive"
+                checked=(topic.status == "inactive" ? true : false)
+            )
+            label(for="statusInActive" class="form-check-label") Không hoạt động
+        div(class="form-group")
+            button(
+                type="submit"
+                class="btn btn-primary"
+            ) Cập nhật
+
+block scripts
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof initTinyMCE === 'function') {
+        initTinyMCE(); 
+      }
+    });

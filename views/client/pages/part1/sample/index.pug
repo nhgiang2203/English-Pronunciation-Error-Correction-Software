@@ -21,7 +21,7 @@ block main
               data-bs-toggle="collapse", 
               data-bs-target=`#collapse-${index}`
             )
-              | 🎧 Question #{index + 1}
+              | 🎧 Câu hỏi #{index + 1}
 
           .accordion-collapse.collapse(id=`collapse-${index}`)
             .accordion-body
@@ -35,7 +35,7 @@ block main
                           role="button", 
                           onclick=`playAudio('${questionAudio}')`
                         )
-                        | Question
+                        | Câu hỏi
 
                       p.mb-2 !{questionText}
                       div.d-none(id=`text-question-${index}`) !{questionText}
@@ -75,7 +75,7 @@ block main
                           role="button", 
                           onclick=`playAudio('${answerAudio}')`
                         )
-                        | Answer
+                        | Câu trả lời
 
                       p.mb-2 !{answerText}
                       div.d-none(id=`text-answer-${index}`) !{answerText}

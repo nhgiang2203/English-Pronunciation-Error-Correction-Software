@@ -18,15 +18,35 @@ block main
               )
               h5.my-3 #{user.username}
               p.text-muted.mb-1 #{user.slogan || ''}
-              .d-flex.justify-content-center.mb-2
-                button.btn.btn-primary(type='button') Follow
+              .d-flex.justify-content-center.text-center.rounded-3.p-2(style='background-color: #efefef;')
+                .mx-3
+                  p.small.text-muted.mb-1 Bài viết
+                  p.mb-0 #{lenAnswer}
+                .mx-3
+                  a(href=`/user/following/${user.id}`, class='small text-muted mb-1') Đang theo dõi
+                  p.mb-0 #{lenFollowing}
+                .mx-3
+                  a(href=`/user/follower/${user.id}`, class='small text-muted mb-1') Người theo dõi
+                  p.mb-0 #{lenFollower}
+
+              if isOwnProfile == false
+                .mt-4
+                  .d-flex.justify-content-center.mb-2
+                    button#followBtn.btn.btn-primary(
+                      type='button',
+                      data-user-id=user.id,
+                      data-following=isFollowing ? 'true' : 'false'
+                    ) #{isFollowing ? 'Unfollow' : 'Follow'}
+
+
+
 
           // Thông tin cá nhân
           .card.mb-4
             .card-body
               .row.mb-3
                 .col-sm-4
-                  strong Username:
+                  strong.d-inline Tên người dùng:
                 .col-sm-8
                   span.text-muted #{user.username}
               .row.mb-3
@@ -36,12 +56,12 @@ block main
                   span.text-muted #{user.email}
               .row.mb-3
                 .col-sm-4
-                  strong Phone:
+                  strong Số điện thoại:
                 .col-sm-8
                   span.text-muted #{user.phone || '(empty)'}
               .row
                 .col-sm-4
-                  strong Address:
+                  strong Địa chỉ:
                 .col-sm-8
                   span.text-muted #{user.address || '(empty)'}
 
@@ -50,14 +70,16 @@ block main
             .card-body.p-0
               ul.list-group.list-group-flush.rounded-3
                 li.list-group-item.d-flex.justify-content-between.align-items-center.p-3
-                  i.fab.fa-twitter.fa-lg(style='color: #55acee;')
-                  p.mb-0 #{user.twitter || '(empty)'}
+                  i.fab.fa-facebook-f.fa-lg(style='color: #3b5998;')
+                  p.mb-0 #{user.facebook || '(empty)'}
                 li.list-group-item.d-flex.justify-content-between.align-items-center.p-3
                   i.fab.fa-instagram.fa-lg(style='color: #ac2bac;')
                   p.mb-0 #{user.instagram || '(empty)'}
                 li.list-group-item.d-flex.justify-content-between.align-items-center.p-3
-                  i.fab.fa-facebook-f.fa-lg(style='color: #3b5998;')
-                  p.mb-0 #{user.facebook || '(empty)'}
+                  i.fab.fa-twitter.fa-lg(style='color: #55acee;')
+                  p.mb-0 #{user.twitter || '(empty)'}
+                
+                
 
         // Cột bên phải: các bài viết (answers)
         .col-lg-8
@@ -68,41 +90,44 @@ block main
                   .card.mb-4.shadow-sm
                     .card-header.bg-light
                       h5.mb-0.text-primary #{answer.topic}
-                      small.text-muted.mt-2.d-block Created at #{moment(answer.createdAt).format('DD/MM/YYYY')}
+                      small.text-muted.mt-2.d-block Ngày đăng #{moment(answer.createdAt).format('DD/MM/YYYY')}
 
                     .card-body
-                      h6.text-muted.mb-2 Question:
+                      h6.text-muted.mb-2 Câu hỏi:
                       p.card-text= answer.question
 
-                      h6.text-muted.mb-2 Answer:
+                      h6.text-muted.mb-2 Câu trả lời:
                       p.card-text !{answer.answer}
 
-                      h6.text-muted.mb-2 Highlighted sentence:
+                      h6.text-muted.mb-2 Câu đánh dấu:
                       p.card-text !{answer.pronunciationData.highlighted_sentence}
 
-                      h6.text-muted.mb-2 Highlighted IPA:
+                      h6.text-muted.mb-2 IPA đánh dấu:
                       p.card-text !{answer.pronunciationData.highlighted_ipa}
 
                       .row.mb-3
                         .col-md-6
                           p.card-text.mb-1
-                            strong Score:
+                            strong Điểm:
                             |  #{answer.pronunciationData.score}
                         .col-md-6
                           p.card-text.mb-1
-                            strong Grammar:
+                            strong Ngữ pháp:
                             |  #{answer.suggestData.grammar_explanation}
 
-                      h6.text-muted.mb-2 Corrected Answer:
+                      h6.text-muted.mb-2 Câu đúng:
                       p.card-text #{answer.suggestData.corrected_answer}
 
-                      h6.text-muted.mb-2 Relevance:
+                      h6.text-muted.mb-2 Mức độ liên quan:
                       p.card-text #{answer.suggestData.relevance}
 
-                      h6.text-muted.mb-2 Suggested Answer:
+                      h6.text-muted.mb-2 Gợi ý câu trả lời:
                       p.card-text.text-primary-emphasis #{answer.suggestData.suggested_band_higher_answer}
 
                       
 
               else
-                p.text-muted No answers yet.
+                p.text-muted Không có bài viết nào.
+
+block script 
+  script(src="/js/follow.js") 
