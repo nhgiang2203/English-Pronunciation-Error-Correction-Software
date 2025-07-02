@@ -17,6 +17,7 @@ export const result = async(req: Request, res: Response) => {
 
   if(keyword){
     const keywordRegex = new RegExp(keyword, 'i');
+    console.log(keywordRegex);
     const unicodeSlug = convertToSlug(keyword);
     const slugRegex = new RegExp(unicodeSlug, 'i');
 
@@ -26,6 +27,7 @@ export const result = async(req: Request, res: Response) => {
         { slug: slugRegex }
       ]
     });
+    console.log(samples);
     if(samples.length > 0){
       for(const sample of samples){
         newSample.push({
@@ -35,7 +37,7 @@ export const result = async(req: Request, res: Response) => {
         });
       }
     }
-
+    console.log(newSample);
     const practices = await Practice.find({
       $or: [
         { title: keywordRegex },

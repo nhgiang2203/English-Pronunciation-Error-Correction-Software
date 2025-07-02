@@ -9,11 +9,12 @@ import { searchRoutes } from './search.route';
 const clientRoutes = (app: Express): void => {
   app.use(userMiddleware.requireAuth);
   
+  app.use('/search', searchRoutes);
   app.use('/dashboard', dashboardRoutes);
   app.use('/part1', part1Routes);
   app.use('/user', userRoutes);
   app.use('/part2', part2Routes);
-  app.use('/search', searchRoutes);
+  
 }
 
 export default clientRoutes;

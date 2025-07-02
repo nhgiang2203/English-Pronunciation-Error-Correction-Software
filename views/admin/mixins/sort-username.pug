@@ -1,0 +1,12 @@
+mixin sort()
+  div(sort)
+    select(
+      class="form-control"
+      name="sort"
+      sort-select
+    )
+      option(value="") -- Không sắp xếp --
+      option(value="createdAt-desc") Mới nhất
+      option(value="createdAt-asc") Cũ nhất
+      option(value="username-asc") Tên A - Z
+      option(value="username-desc") Tên Z - A

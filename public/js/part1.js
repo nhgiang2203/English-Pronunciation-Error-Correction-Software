@@ -1,6 +1,7 @@
 let currentRecorder = null;
 let currentChunks = [];
 let currentStream = null;
+let currentAudio = null;
 
 const audioBlobs = {};
 
@@ -59,16 +60,21 @@ function createFormData(blob, text, type, index) {
 function highlightIPA(labelIPA, errorIndexes) {
   let result = '', errorIdx = 0;
   for (const ch of labelIPA) {
-    if (ch === ' ') {
+    const flag = errorIndexes[errorIdx];
+    
+    if (flag === null) {
       result += ' ';
+      errorIdx++;
     } else {
-      const isError = errorIndexes[errorIdx] === false;
+      const isError = flag === true;
       result += `<span style="color:${isError ? 'red' : 'green'};font-weight:bold;">${ch}</span>`;
       errorIdx++;
     }
   }
   return result;
 }
+
+
 
 function highlightSentence(words, wordScores) {
   return words.map((word, i) => {
@@ -108,26 +114,39 @@ async function uploadAudioCommon(type, index, url, isPractice = false) {
       <div class="mt-2 border rounded p-2 bg-light">
         <div><strong>Câu gốc:</strong> ${highlightedSentence}</div>
         <div><strong>IPA:</strong> ${highlightedIPA}</div>
-        <div><strong>Điểm tổng:</strong> <span class="badge bg-${badge}">${data.score}</span></div>
+        <div><strong>Điểm tổng:</strong> <span class="badge bg-${badge}">${(data.score*10).toFixed(1)}</span></div>
       </div>
     `;
 
+    Object.assign(resultDiv.dataset, {
+      originalAnswer: data.text,
+      labelIpa: JSON.stringify(data.label_ipa),
+      errorIndexes: JSON.stringify(data.error_char_indexes),
+      wordScores: JSON.stringify(data.word_scores),
+      highlightedSentence,
+      highlightedIPA,
+      score: data.score
+    });
+
     if (isPractice) {
-      Object.assign(resultDiv.dataset, {
-        originalAnswer: data.text,
-        labelIpa: JSON.stringify(data.label_ipa),
-        errorIndexes: JSON.stringify(data.error_char_indexes),
-        wordScores: JSON.stringify(data.word_scores),
-        highlightedSentence,
-        highlightedIPA,
-        score: data.score
-      });
+      const saveBtn = document.createElement("button");
+      saveBtn.className = "btn btn-success btn-sm mt-3 me-2";
+      saveBtn.textContent = "Lưu";
+      saveBtn.onclick = () => saveAnswer(type, index, {}, resultDiv);
+      resultDiv.appendChild(saveBtn);
 
       const improveBtn = document.createElement("button");
       improveBtn.textContent = "💡 Phân tích & gợi ý?";
-      improveBtn.className = "btn btn-sm btn-outline-success mt-2";
+      improveBtn.className = "btn btn-sm btn-outline-success mt-2 me-2";
       improveBtn.onclick = () => showImproveForm(resultDiv, inputText, document.getElementById(`question-${type}-${index}`)?.textContent || "", type, index);
       resultDiv.appendChild(improveBtn);
+    } else {
+      const saveBtn = document.createElement("button");
+      saveBtn.className = "btn btn-success btn-sm mt-3";
+      saveBtn.textContent = "Lưu";
+      console.log(type, index);
+      saveBtn.onclick = () => saveSample(type, index, resultDiv);
+      resultDiv.appendChild(saveBtn);
     }
 
     uploadBtn.textContent = "⬆️ Gửi lại";
@@ -152,9 +171,28 @@ function uploadAudioPrac(type, index) {
   uploadAudioCommon(type, index, "http://127.0.0.1:5000/part2", true);
 }
 
+
+
 function playAudio(url) {
-  new Audio(url).play();
+  // Nếu đã có audio đang phát và trùng URL => dừng lại
+  if (currentAudio && !currentAudio.paused && currentAudio.src === url) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+    return;
+  }
+
+  // Nếu đang phát audio khác => dừng lại
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+
+  // Phát audio mới
+  currentAudio = new Audio(url);
+  currentAudio.play();
 }
+
 
 function showImproveForm(resultDiv, originalText, questionText, type, index) {
   const formId = `improve-form-${type}-${index}`;
@@ -188,15 +226,13 @@ async function analyzeWithLLM(type, index) {
 
   Your tasks are:
   1. Identify grammar and vocabulary mistakes in the student's answer.
-  2. Provide a corrected version of the answer, keeping the original structure and wording as much as possible. Only fix grammar and vocabulary errors without rephrasing the sentence unless absolutely necessary.
-  3. Explain the grammar or vocabulary corrections you made. If there are no mistakes, say "No grammar mistakes".
-  4. Evaluate whether the answer is appropriate and relevant to the question.
-  5. Suggest a better version of the answer that would score Band higher (you can freely rephrase here).
+  2. Explain the grammar or vocabulary corrections you made. If there are no mistakes, say "No grammar mistakes".
+  3. Evaluate whether the answer is appropriate and relevant to the question.
+  4. Suggest a better version of the answer that would score Band higher (you can freely rephrase here).
 
   Return the result in this exact JSON format:
   {
     "grammar_explanation": "<detailed explanation of corrections or 'No grammar mistakes'>",
-    "corrected_answer": "<the corrected version of the answer with same structure>",
     "relevance": "<evaluate how well the answer addresses the question>",
     "suggested_band_higher_answer": "<improved version for Band higher>"
   }
@@ -209,17 +245,21 @@ async function analyzeWithLLM(type, index) {
     const res = await fetch("http://localhost:11434/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "mistral", prompt, stream: false })
+      body: JSON.stringify({model: 'mistral', prompt, stream: false })
     });
 
     const text = await res.text();
-    const analysis = JSON.parse(text);
+    console.log("LLM raw response:", text);
+     // Parse lần đầu
+    const outer = JSON.parse(text);
+
+    // Parse lần hai với field "response"
+    const analysis = JSON.parse(outer.response);
     const resultDiv = document.getElementById(`${type}-result-${index}`);
 
     analysisDiv.innerHTML = `
       <div class="border rounded bg-light p-2">
         <div><strong>Sửa lỗi:</strong> ${analysis.grammar_explanation}</div>
-        <div><strong>Câu sửa:</strong> ${analysis.corrected_answer}</div>
         <div><strong>Liên quan:</strong> ${analysis.relevance}</div>
         <div><strong>Gợi ý:</strong> ${analysis.suggested_band_higher_answer}</div>
       </div>
@@ -238,7 +278,7 @@ async function analyzeWithLLM(type, index) {
   }
 }
 
-async function saveAnswer(type, index, analysis, resultDiv) {
+async function saveAnswer(type, index, analysis={}, resultDiv) {
   const topic = document.getElementById("topicId").value;
   const userId = document.getElementById("userId").value;
   const pronunciationData = {
@@ -249,10 +289,13 @@ async function saveAnswer(type, index, analysis, resultDiv) {
   };
 
   const suggestData = analysis;
+  const answerTextarea = document.getElementById(`edit-answer-${type}-${index}`);
+  const answerText = answerTextarea ? answerTextarea.value : document.getElementById(`text-answer-${index}`)?.textContent;
+
   const answerData = {
     topic,
     questionText: document.getElementById(`text-question-${index}`)?.textContent || "",
-    answerText: document.getElementById(`edit-answer-${type}-${index}`).value,
+    answerText,
     pronunciationData,
     suggestData
   };
@@ -270,3 +313,87 @@ async function saveAnswer(type, index, analysis, resultDiv) {
     alert("Lỗi server khi lưu!");
   }
 }
+
+async function saveSample(type, index, resultDiv) {
+  const topic = document.getElementById("topicId").value;
+  const userIdElem = document.getElementById("userId");
+  let userId = '';
+  console.log(userIdElem);
+  if (userIdElem == null || userIdElem === "") {
+    window.location.href = "/user/login";
+    return;
+  } else {
+    userId = userIdElem.value;
+  }
+  const pronunciationData = {
+    highlighted_sentence: resultDiv.dataset.highlightedSentence,
+    highlighted_ipa: resultDiv.dataset.highlightedIPA,
+    answerOriginal: resultDiv.dataset.originalAnswer,
+    score: parseFloat(resultDiv.dataset.score)
+  };
+
+  const text = `${type}Text`;
+  const answerData = {
+    topic,
+    [ text ]: document.getElementById(`text-${type}-${index}`)?.textContent || "",
+    pronunciationData
+  };
+
+  try {
+    const res = await fetch(`/user/my-answer/${userId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(answerData)
+    });
+    const result = await res.json();
+    alert(result.success ? "Đã lưu thành công!" : "Lưu thất bại!");
+  } catch (err) {
+    console.error(err);
+    alert("Lỗi server khi lưu!");
+  }
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get('tab');
+  if (tab === 'practices') {
+    const trigger = document.querySelector('#tab-practices');
+    if (trigger) new bootstrap.Tab(trigger).show();
+  } else {
+    const trigger = document.querySelector('#tab-samples');
+    if (trigger) new bootstrap.Tab(trigger).show();
+  }
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const buttons = document.querySelectorAll("[button-pagination]");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", function () {
+      const page = this.getAttribute("button-pagination");
+
+      const url = new URL(window.location.href);
+      const tab = document.querySelector(".nav-link.active")?.getAttribute("href").replace("#", "");
+
+      // Sử dụng page query riêng theo tab
+      if (tab === "samples") {
+        url.searchParams.set("samplePage", page);
+        url.searchParams.set("tab", "samples");
+      } else if (tab === "practices") {
+        url.searchParams.set("practicePage", page);
+        url.searchParams.set("tab", "practices");
+      }
+
+      window.location.href = url.toString();
+    });
+  });
+
+  // Kích hoạt tab khi load lại trang
+  const params = new URLSearchParams(window.location.search);
+  const activeTab = params.get("tab");
+  if (activeTab) {
+    document.querySelector(`a[href="#${activeTab}"]`)?.click();
+  }
+});

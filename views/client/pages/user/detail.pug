@@ -36,7 +36,7 @@ block main
                       type='button',
                       data-user-id=user.id,
                       data-following=isFollowing ? 'true' : 'false'
-                    ) #{isFollowing ? 'Unfollow' : 'Follow'}
+                    ) #{isFollowing ? 'Hủy theo dõi' : 'Theo dõi'}
 
 
 
@@ -90,39 +90,44 @@ block main
                   .card.mb-4.shadow-sm
                     .card-header.bg-light
                       h5.mb-0.text-primary #{answer.topic}
-                      small.text-muted.mt-2.d-block Ngày đăng #{moment(answer.createdAt).format('DD/MM/YYYY')}
+                      if answer.createdAt
+                        small.text-muted.mt-2.d-block Ngày đăng #{moment(answer.createdAt).format('DD/MM/YYYY')}
 
                     .card-body
-                      h6.text-muted.mb-2 Câu hỏi:
-                      p.card-text= answer.question
+                      if answer.question
+                        h6.text-muted.mb-2 Câu hỏi:
+                        p.card-text= answer.question
 
-                      h6.text-muted.mb-2 Câu trả lời:
-                      p.card-text !{answer.answer}
+                      if answer.answer
+                        h6.text-muted.mb-2 Câu trả lời:
+                        p.card-text !{answer.answer}
 
-                      h6.text-muted.mb-2 Câu đánh dấu:
-                      p.card-text !{answer.pronunciationData.highlighted_sentence}
+                      if answer.pronunciationData.highlighted_sentence
+                        h6.text-muted.mb-2 Câu đánh dấu:
+                        p.card-text !{answer.pronunciationData.highlighted_sentence}
 
-                      h6.text-muted.mb-2 IPA đánh dấu:
-                      p.card-text !{answer.pronunciationData.highlighted_ipa}
+                      if answer.pronunciationData.highlighted_ipa
+                        h6.text-muted.mb-2 IPA đánh dấu:
+                        p.card-text !{answer.pronunciationData.highlighted_ipa}
 
-                      .row.mb-3
-                        .col-md-6
-                          p.card-text.mb-1
-                            strong Điểm:
-                            |  #{answer.pronunciationData.score}
-                        .col-md-6
-                          p.card-text.mb-1
-                            strong Ngữ pháp:
-                            |  #{answer.suggestData.grammar_explanation}
+                      if answer.pronunciationData.score
+                        p.card-text.mb-1
+                          strong Điểm:
+                          |  #{(answer.pronunciationData.score * 10).toFixed(1)}
 
-                      h6.text-muted.mb-2 Câu đúng:
-                      p.card-text #{answer.suggestData.corrected_answer}
 
-                      h6.text-muted.mb-2 Mức độ liên quan:
-                      p.card-text #{answer.suggestData.relevance}
+                      if answer.suggestData.grammar_explanation
+                        p.card-text.mb-1
+                          strong Ngữ pháp:
+                          |  #{answer.suggestData.grammar_explanation}
 
-                      h6.text-muted.mb-2 Gợi ý câu trả lời:
-                      p.card-text.text-primary-emphasis #{answer.suggestData.suggested_band_higher_answer}
+                      if answer.suggestData.relevance
+                        h6.text-muted.mb-2 Mức độ liên quan:
+                        p.card-text #{answer.suggestData.relevance}
+
+                      if answer.suggestData.suggested_band_higher_answer
+                        h6.text-muted.mb-2 Gợi ý câu trả lời:
+                        p.card-text.text-primary-emphasis #{answer.suggestData.suggested_band_higher_answer}
 
                       
 

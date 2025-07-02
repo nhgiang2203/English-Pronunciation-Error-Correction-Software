@@ -216,8 +216,9 @@ async function analyzeWithLLM(topicId) {
     });
 
     const text = await res.text();
-    const analysis = JSON.parse(text);
-    const resultDiv = document.getElementById(`${type}-result-${index}`);
+    const outer = JSON.parse(text);
+    const analysis = JSON.parse(outer.response);
+    const resultDiv = document.getElementById(`answer-result-${topicId}`);
 
     analysisDiv.innerHTML = `
       <div class="border rounded bg-light p-2">
@@ -230,7 +231,7 @@ async function analyzeWithLLM(topicId) {
     const saveBtn = document.createElement("button");
     saveBtn.className = "btn btn-success btn-sm mt-3";
     saveBtn.textContent = "Lưu";
-    saveBtn.onclick = () => saveAnswer(type, index, analysis, resultDiv);
+    saveBtn.onclick = () => saveAnswer(topicId, analysis, resultDiv);
     analysisDiv.appendChild(saveBtn);
   } catch (err) {
     analysisDiv.innerHTML = `<div class="text-danger">Lỗi phân tích: ${err.message}</div>`;
@@ -241,7 +242,7 @@ async function analyzeWithLLM(topicId) {
 }
 
 async function saveAnswer(topicId, analysis, resultDiv) {
-  const topic = document.getElementById("topicId").value;
+  const topic = document.getElementById("topicTitle").value;
   const userId = document.getElementById("userId").value;
   const pronunciationData = {
     highlighted_sentence: resultDiv.dataset.highlightedSentence,
@@ -253,8 +254,7 @@ async function saveAnswer(topicId, analysis, resultDiv) {
   const suggestData = analysis;
   const answerData = {
     topic,
-    questionText: document.getElementById(`text-question-${index}`)?.textContent || "",
-    answerText: document.getElementById(`edit-answer-${type}-${index}`).value,
+    answerText : document.getElementById(`edit-answer-${topicId}`).value,
     pronunciationData,
     suggestData
   };
@@ -272,3 +272,19 @@ async function saveAnswer(topicId, analysis, resultDiv) {
     alert("Lỗi server khi lưu!");
   }
 }
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const buttonPagination = document.querySelectorAll('[button-pagination]');
+  
+  if (buttonPagination.length > 0) {
+    let url = new URL(window.location.href);
+    buttonPagination.forEach(button => {
+      button.addEventListener('click', () => {
+        const page = button.getAttribute('button-pagination');
+        url.searchParams.set('page', page);
+        window.location.href = url.href;
+      });
+    });
+  }
+});

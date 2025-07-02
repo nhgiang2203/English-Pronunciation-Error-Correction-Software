@@ -16,7 +16,7 @@
 
 /* Body */
 .body .sider {
-  width: 150px;
+  width: 215px;
   background: #323232;
   color: #fff;
   height: calc(100vh - 56px);
@@ -27,10 +27,10 @@
 
 .body .main {
     min-height: 100vh;
-    margin-left: 200px;
+    margin-left: 215px;
     padding: 20px;
     position: relative;
-    width: calc(100% - 200px); /* Match sidebar width */
+    width: calc(100% - 215px); /* Match sidebar width */
     overflow-x: auto; /* Cho phép scroll ngang nếu bảng quá to */
     background-color: #fafbfe;
 }
@@ -71,7 +71,7 @@ body {
 
 
 #sidebar {
-  width: 200px; /* luôn full width */
+  width: 215px; /* luôn full width */
   min-width: 200px;
   z-index: 1000;
   background-color: #0e2238;
@@ -387,3 +387,15 @@ td.content-preview::-webkit-scrollbar-thumb:hover {
 .dropdown ul li:hover {
   background-color: #f3f4f6;
 }
+
+.avatar-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+audio {
+  display: block;
+  height: 40px !important;
+}
+

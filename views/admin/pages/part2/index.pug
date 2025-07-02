@@ -1,52 +1,80 @@
 extends ../../layouts/default.pug
+include ../../mixins/sort.pug
+include ../../mixins/search.pug
+include ../../mixins/pagination.pug
+include ../../mixins/filter-status.pug
 
 block main
-  h1.mb-4.text-primary #{pageTitle}
+  if(role.permissions.includes("part2_view"))
+    h1.mb-4.text-primary #{pageTitle}
 
-  .card.shadow-sm.mb-4
-    .card-header.bg-light.d-flex.justify-content-between.align-items-center
-      span.fw-semibold.text-dark Danh sách Part 2
-      a.btn.btn-success(href=`/${prefixAdmin}/part2/create`) + Thêm
+    .card.shadow-sm.mb-4
+      .card-header.bg-light
+        span.fw-semibold.text-dark Danh sách bài Part 2
 
-    .card-body.p-0
-      .table-wrapper
-        .table-responsive
-          table.table.table-hover.align-middle.fixed-table
-            thead.table-light
-              tr
-                th(scope='col') STT
-                th(scope='col') Tiêu đề
-                th(scope='col') Nội dung
-                th(scope='col') Trạng thái
-                th(scope='col') Hành động
+      .card-body
+        .d-flex.flex-wrap.align-items-end.justify-content-between.gap-2
 
-            tbody
-              each item, itemIndex in topics
+          // Nhóm bộ lọc trạng thái (cho 3 nút nằm cùng hàng)
+          .d-flex.flex-wrap.gap-2
+            +filter-status(filterStatus)  
+
+          // Dropdown sắp xếp
+          .flex-grow-1(style="max-width: 200px;")
+            +sort()
+
+          // Tìm kiếm (kéo dài thanh input)
+          .flex-grow-1(style="max-width: 300px;")
+            +search(keyword)
+
+          // Nút Thêm bài mẫu
+          if(role.permissions.includes("part2_create"))
+            a.btn.btn-outline-success(href=`/${prefixAdmin}/part2/create`) + Thêm mới
+
+      .card-body.p-0
+        .table-wrapper
+          .table-responsive
+            table.table.table-hover.align-middle.fixed-table
+              thead.table-light
                 tr
-                  td.align-middle= itemIndex + 1
-                  td.align-middle.fw-bold= item.title
+                  th(scope='col' style='width: 5%') STT
+                  th(scope='col' style='width: 30%') Tiêu đề
+                  th(scope='col') Nội dung
+                  th(scope='col' style='width: 10%') Trạng thái
+                  th(scope='col' style='width: 20%') Hành động
 
-                  td.question-cell
-                    div.d-flex
-                      span !{item.content}
+              tbody
+                each item, itemIndex in topics
+                  tr
+                    td.align-middle= itemIndex + 1
+                    td.align-middle.fw-bold= item.title
 
-
-                  td.align-middle
-                    if item.status == 'active'
-                      span.badge.bg-success.px-3.py-2 Hoạt động
-                    else
-                      span.badge.bg-danger.px-3.py-2 Không hoạt động
-
-                  td.align-middle
-                    .d-inline-flex.gap-2
-                      a.btn.btn-outline-secondary.btn-sm(href=`/${prefixAdmin}/part2/detail/${item.slug}`) Chi tiết
-                      a.btn.btn-outline-warning.btn-sm(href=`/${prefixAdmin}/part2/edit/${item.slug}`) Sửa
-                      button.btn.btn-outline-danger.btn-sm(button-delete data-id=item.id) Xóa
+                    td.question-cell
+                      div.d-flex
+                        span !{item.content}
 
 
-  form(
-    action=''
-    method='POST'
-    id='form-delete-item'
-    data-path=`/${prefixAdmin}/part2/delete`
-  )
+                    td.align-middle
+                      if item.status == 'active'
+                        span.badge.bg-success.px-3.py-2 Hoạt động
+                      else
+                        span.badge.bg-danger.px-3.py-2 Không hoạt động
+
+                    td.align-middle
+                      .d-inline-flex.gap-2
+                        if(role.permissions.includes("part2_view"))
+                          a.btn.btn-outline-secondary.btn-sm(href=`/${prefixAdmin}/part2/detail/${item.slug}`) Chi tiết
+                        if(role.permissions.includes("part2_edit"))
+                          a.btn.btn-outline-warning.btn-sm(href=`/${prefixAdmin}/part2/edit/${item.slug}`) Sửa
+                        if(role.permissions.includes("part2_delete"))
+                          button.btn.btn-outline-danger.btn-sm(button-delete data-id=item.id) Xóa
+
+    +pagination(pagination)
+    form(
+      action=''
+      method='POST'
+      id='form-delete-item'
+      data-path=`/${prefixAdmin}/part2/delete`
+    )
+  else 
+    h2 Bạn không có quyền truy cập

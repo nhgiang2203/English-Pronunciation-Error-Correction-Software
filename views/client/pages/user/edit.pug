@@ -50,7 +50,7 @@ block main
 
                   .form-group
                     label.form-label E-mail
-                    input.form-control.mb-1(type='text' value=user.email name='email')
+                    input.form-control.mb-1(type='text' value=user.email name='email' readonly)
                     input(type='text' name='id' value=user.id hidden)
                     if user.verify == false
                       .alert.alert-warning.mt-3

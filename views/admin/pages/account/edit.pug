@@ -49,7 +49,7 @@ block main
 
                   .form-group
                     label.form-label E-mail
-                    input.form-control.mb-1(type='text' value=account.email name='email')
+                    input.form-control.mb-1(type='text' value=account.email name='email' readonly)
                     input(type='text' name='id' value=account.id hidden)
                     if account.verify == false
                       .alert.alert-warning.mt-3

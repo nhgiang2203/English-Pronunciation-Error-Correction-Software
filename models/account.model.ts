@@ -15,7 +15,7 @@ const accountSchema = new mongoose.Schema({
   },
   phone: String,
   address: String,
-  role: String,
+  role_id: String,
   verify: {
     type: Boolean,
     default: false

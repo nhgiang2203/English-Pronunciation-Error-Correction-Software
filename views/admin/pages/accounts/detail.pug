@@ -1,0 +1,46 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+  if(role.permissions.includes("account_view"))
+    .container.mt-4
+      .card.shadow.p-4(style="max-width: 600px; margin: auto; border-radius: 16px;")
+        h2.mb-4.text-center Chi tiết tài khoản
+
+        +alert-error(5000)
+        +alert-success(5000)
+
+        dl.row
+          dt.col-sm-4 Họ tên:
+          dd.col-sm-8 #{data.username}
+
+          dt.col-sm-4 Email:
+          dd.col-sm-8 #{data.email}
+
+          dt.col-sm-4 Số điện thoại:
+          dd.col-sm-8 #{data.phone || 'Không có'}
+
+          dt.col-sm-4 Avatar:
+          dd.col-sm-8
+            img.avatar-img(
+                      src=data.avatar
+                      alt=data.username
+                    )
+
+          dt.col-sm-4 Phân quyền:
+          dd.col-sm-8
+            | #{data.role ? data.role: 'Không xác định'}
+
+          dt.col-sm-4 Trạng thái:
+          dd.col-sm-8 #{data.status === 'active' ? 'Hoạt động' : 'Dừng hoạt động'}
+        
+        if(role.permissions.includes("account_edit"))
+          if(data.role !== 'Super admin')
+            .text-center.mt-4
+              a(
+                href=`/${prefixAdmin}/accounts/edit/${data.id}`
+                type="submit"
+                class="btn btn-warning"
+                ) Sửa
+  else 
+    h2 Bạn không có quyền truy cập !

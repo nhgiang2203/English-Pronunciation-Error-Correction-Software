@@ -11,6 +11,9 @@ block main
   
     //- List of Questions
     each questionItem, index in practice.questions
+      - const questionText = questionItem.text;
+      - const questionAudio = questionItem.audio;
+
       .accordion.mb-3(id=`accordion-${index}`)
         .accordion-item.shadow-sm
           h2.accordion-header
@@ -27,11 +30,16 @@ block main
               //- Câu hỏi
               .card.border-info
                 .card-body
-                  h6.text-info.mb-2
-                    i.fas.fa-question-circle.me-1.text-info
+                  h6.text-primary.mb-2
+                    i.fas.fa-volume-up.me-1.text-primary(
+                      role="button", 
+                      onclick=`playAudio('${questionAudio}')`
+                    )
                     | Câu hỏi
-                  p.mb-0 !{questionItem.text}
-                  div.d-none(id=`text-question-${index}`) !{questionItem.text}
+                  p.mb-0 !{questionText}
+                  div.d-none(id=`text-question-${index}`) !{questionText}
+
+
 
               //- Ghi âm
               p.text-muted.mt-2.mb-1.small

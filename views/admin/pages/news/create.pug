@@ -2,82 +2,85 @@ extend ../../layouts/default
 include ../../mixins/alert
 
 block main 
-  div.alert-container
-    +alert-success(5000)
-    +alert-error(5000)
-  
-  h1.mb-4 #{pageTitle}
+  if(role.permissions.includes("news_create"))
+    div.alert-container
+      +alert-success(5000)
+      +alert-error(5000)
+    
+    h1.mb-4 #{pageTitle}
 
-  form(
-    action='/admin/news/create'
-    method='POST'
-    enctype="multipart/form-data"
-  )
-    .form-group 
-      label(for='title') Tiêu đề
-      input(
-        type='text'
-        class='form-control'
-        id='title'
-        name='title'
-        required
-      )
-    div(
-      class='form-group'
-      upload-image
+    form(
+      action='/admin/news/create'
+      method='POST'
+      enctype="multipart/form-data"
     )
-      label(for='img') Ảnh
-      input(
-        type='file'
-        class='form-control-file'
-        id='img'
-        name='img'
-        accept='image/*'
-        upload-image-input
+      .form-group 
+        label(for='title') Tiêu đề
+        input(
+          type='text'
+          class='form-control'
+          id='title'
+          name='title'
+          required
+        )
+      div(
+        class='form-group'
+        upload-image
       )
-      img(
-        src=''
-        class='image-preview'
-        upload-image-preview
-      )
+        label(for='img') Ảnh
+        input(
+          type='file'
+          class='form-control-file'
+          id='img'
+          name='img'
+          accept='image/*'
+          upload-image-input
+        )
+        img(
+          src=''
+          class='image-preview'
+          upload-image-preview
+        )
 
-    .form-group 
-      label(for='content') Nội dung
-      textarea(
-        type='text'
-        class='form-control'
-        id='content'
-        name='content'
-        rows='10'
-        textarea-mce
-      )
-    
-    div(class='form-group form-check form-check-inline')
-      input(
-        type='radio'
-        class='form-check-input'
-        id='statusActive'
-        name='status'
-        value='active'
-        checked
-      )
-      label(for='statusActive') Hoạt động
+      .form-group 
+        label(for='content') Nội dung
+        textarea(
+          type='text'
+          class='form-control'
+          id='content'
+          name='content'
+          rows='10'
+          textarea-mce
+        )
+      
+      div(class='form-group form-check form-check-inline')
+        input(
+          type='radio'
+          class='form-check-input'
+          id='statusActive'
+          name='status'
+          value='active'
+          checked
+        )
+        label(for='statusActive') Hoạt động
 
-    div(class='form-group form-check form-check-inline')
-      input(
-        type='radio'
-        class='form-check-input'
-        id='statusInactive'
-        name='status'
-        value='inactive'
-      )
-      label(for='statusInactive') Không hoạt động
-    
-    .form-group 
-      button(
-        type='submit'
-        class='btn btn-primary'
-      ) Thêm
+      div(class='form-group form-check form-check-inline')
+        input(
+          type='radio'
+          class='form-check-input'
+          id='statusInactive'
+          name='status'
+          value='inactive'
+        )
+        label(for='statusInactive') Không hoạt động
+      
+      .form-group 
+        button(
+          type='submit'
+          class='btn btn-primary'
+        ) Thêm
+  else 
+    h2 Bạn không có quyền truy cập!
 
 block scripts
   script.

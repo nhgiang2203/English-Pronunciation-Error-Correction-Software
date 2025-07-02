@@ -1,0 +1,87 @@
+extends ../../layouts/default.pug
+include ../../mixins/sort.pug
+include ../../mixins/search.pug
+include ../../mixins/pagination.pug
+include ../../mixins/filter-status.pug
+
+block main
+  if(role.permissions.includes("role_view"))
+    h1(class="mb-4 text-primary") Nhóm quyền
+
+    .card.shadow-sm.mb-4
+      .card-header.bg-light
+        span.fw-semibold.text-dark Danh sách nhóm quyền
+
+      .card-body
+        .d-flex.flex-wrap.align-items-end.justify-content-between.gap-2
+
+          // Nhóm bộ lọc trạng thái (cho 3 nút nằm cùng hàng)
+          .d-flex.flex-wrap.gap-2
+            +filter-status(filterStatus)  
+
+          // Dropdown sắp xếp
+          .flex-grow-1(style="max-width: 200px;")
+            +sort()
+
+          // Tìm kiếm (kéo dài thanh input)
+          .flex-grow-1(style="max-width: 300px;")
+            +search(keyword)
+
+          // Nút Thêm bài mẫu
+          if(role.permissions.includes("role_create"))
+            a.btn.btn-outline-success(href=`/${prefixAdmin}/role/create`) + Thêm mới
+      
+      .card-body.p-0
+        .table-wrapper
+          .table-responsive
+            table.table.table-hover.align-middle.fixed-table
+              thead.table-light
+                  tr
+                    th STT
+                    th Nhóm quyền
+                    th Mô tả ngắn
+                    th Hành động
+
+              tbody
+                  if(records.length > 0)
+                      each item, index in records
+                          tr
+                              td #{index + 1}
+                              td #{item.title}
+                              td #{item.description}
+                              td
+                                  a(
+                                      class="btn btn-outline-secondary btn-sm me-2"
+                                      href=`/${prefixAdmin}/role/detail/${item.id}`
+                                  ) Chi tiết
+
+                                  if(role.permissions.includes("role_edit"))
+                                    if(item.title !== 'Super admin')
+                                      a(
+                                          class="btn btn-outline-warning btn-sm me-2"
+                                          href=`/${prefixAdmin}/role/edit/${item.id}`
+                                      ) Sửa
+                                  if(role.permissions.includes("role_delete"))
+                                  if(item.title !== 'Super admin')
+                                      button.btn.btn-outline-danger.btn-sm(
+                                      button-delete
+                                      data-id=item.id
+                                      ) Xóa
+                                  
+                                  
+                  else
+                      tr
+                          td(colspan="4" class="text-center") Chưa có nhóm quyền nào được tạo.
+    +pagination(pagination)
+    form(
+        action=""
+        method="POST"
+        id="form-delete-item"
+        data-path=`/${prefixAdmin}/role/delete`
+        ) 
+
+  else 
+      h2 Bạn không có quyền truy cập!
+
+block scripts 
+  script(src="/admin/js/role.js") 

@@ -1,5 +1,6 @@
 extend ../../layouts/default
 include ../../mixins/box-head
+include ../../mixins/pagination-part2
 
 block main 
   .container.my-5
@@ -30,3 +31,7 @@ block main
                           ) 
                             i.fa-solid.fa-lock.mr-1
                             | #{topic.title}
+            +pagination(pagination)
+
+block script 
+  script(src="/js/part2.js") 

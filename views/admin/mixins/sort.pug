@@ -1,0 +1,17 @@
+mixin sort()
+  div(sort)
+    select(
+      class="form-control"
+      name="sort"
+      sort-select
+    )
+      option(value="") -- Không sắp xếp --
+      option(value="createdAt-desc") Mới nhất
+      option(value="createdAt-asc") Cũ nhất
+      option(value="title-asc") Tiêu đề A - Z
+      option(value="title-desc") Tiêu đề Z - A
+
+    //- button(
+    //-   class="btn btn-danger mt-2"
+    //-   sort-clear
+    //- ) Xóa

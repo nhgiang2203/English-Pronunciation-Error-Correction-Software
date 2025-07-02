@@ -3,6 +3,7 @@ include ../../mixins/alert.pug
 
 
 block main 
+  if(role.permissions.includes("news_edit"))
     div.alert-container
       +alert-success(5000)
       +alert-error(5000)
@@ -84,7 +85,9 @@ block main
                 type="submit"
                 class="btn btn-primary"
             ) Cập nhật
-
+  else 
+    h2 Bạn không có quyền truy cập! 
+    
 block scripts
   script.
     document.addEventListener('DOMContentLoaded', function () {

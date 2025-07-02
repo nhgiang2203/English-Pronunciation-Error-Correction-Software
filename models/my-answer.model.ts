@@ -13,7 +13,6 @@ const myAnswerSchema = new mongoose.Schema({
   },
   suggestData: {
     grammar_explanation: String,
-    corrected_answer: String,
     relevance: String,
     suggested_band_higher_answer: String
   },

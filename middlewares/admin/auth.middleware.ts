@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Account from '../../models/account.model';
+import Role from '../../models/role.model';
 import { systemConfig } from '../../config/system';
 
 export const requireAuth = async(req: Request, res: Response, next: NextFunction) => {
@@ -10,7 +11,11 @@ export const requireAuth = async(req: Request, res: Response, next: NextFunction
           status: "active"
       }).select("-password");
       if(user){
-          res.locals.user = user;
+        const role = await Role.findOne({_id: user.role_id}).select("title permissions");
+        console.log(role);
+        res.locals.user = user;
+        res.locals.role = role;
+
       }
   }
 

@@ -1,54 +1,82 @@
 extends ../../layouts/default.pug
+include ../../mixins/sort.pug
+include ../../mixins/search.pug
+include ../../mixins/pagination.pug
+include ../../mixins/filter-status.pug
 
 block main 
-  h1.mb-4.text-primary #{pageTitle}
+  if(role.permissions.includes("news_view"))
+    h1.mb-4.text-primary #{pageTitle}
 
-  .card.shadow-sm.mb-4
-    .card-header.bg-light.d-flex.justify-content-between.align-items-center
-      span.fw-semibold.text-dark Danh sách bài báo
-      a.btn.btn-success(href=`/${prefixAdmin}/news/create`) + Thêm
+    .card.shadow-sm.mb-4
+      .card-header.bg-light
+        span.fw-semibold.text-dark Danh sách bài báo
 
-    .card-body.p-0
-      .table-wrapper
-        .table-responsive
-          table.table.table-hover.align-middle.fixed-table
-            thead.table-light
-              tr 
-                th(style='width: 50px; text-align: center;') STT
-                th(style='width: 200px;text-align: center;') Tiêu đề
-                th(style='width: 120px; text-align: center;') Ảnh
-                th(style='width: 400px;text-align: center;') Nội dung
-                th(style='width: 100px; text-align: center;') Trạng thái
-                th(style='width: 180px; text-align: center;') Hành động
-            
-            tbody 
-              each item, index in news
-                tr
-                  td.text-center #{index+1}
-                  td #{item.title}
-                  td.text-center 
-                    img(
-                      src=item.img 
-                      alt=item.title 
-                      width="150px"
-                      height="auto"
-                    )
-                  td.content-preview !{item.content}
-                  td.text-center
-                    if(item.status === 'active')
-                      a(href="javascript:;" class="badge badge-success") Hoạt động
-                    else 
-                      a(href="javascript:;" class="badge badge-danger") Không hoạt động
-                  td.align-middle.text-center
-                        .d-inline-flex.gap-2
-                          a.btn.btn-outline-secondary.btn-sm(href=`/${prefixAdmin}/news/detail/${item.slug}`) Chi tiết
-                          a.btn.btn-outline-warning.btn-sm(href=`/${prefixAdmin}/news/edit/${item.slug}`) Sửa
-                          button.btn.btn-outline-danger.btn-sm(button-delete data-id=item.id) Xóa
+      .card-body
+        .d-flex.flex-wrap.align-items-end.justify-content-between.gap-2
 
+          // Nhóm bộ lọc trạng thái (cho 3 nút nằm cùng hàng)
+          .d-flex.flex-wrap.gap-2
+            +filter-status(filterStatus)  
 
-  form(
-    action=''
-    method='POST' 
-    id='form-delete-item'
-    data-path=`/${prefixAdmin}/news/delete`
-  )
+          // Dropdown sắp xếp
+          .flex-grow-1(style="max-width: 200px;")
+            +sort()
+
+          // Tìm kiếm (kéo dài thanh input)
+          .flex-grow-1(style="max-width: 300px;")
+            +search(keyword)
+
+          // Nút Thêm bài mẫu
+          if(role.permissions.includes("news_create"))
+            a.btn.btn-outline-success(href=`/${prefixAdmin}/news/create`) + Thêm mới
+
+      .card-body.p-0
+        .table-wrapper
+          .table-responsive
+            table.table.table-hover.align-middle.fixed-table
+              thead.table-light
+                tr 
+                  th(style='width: 50px; text-align: center;') STT
+                  th(style='width: 200px;text-align: center;') Tiêu đề
+                  th(style='width: 120px; text-align: center;') Ảnh
+                  th(style='width: 400px;text-align: center;') Nội dung
+                  th(style='width: 100px; text-align: center;') Trạng thái
+                  th(style='width: 180px; text-align: center;') Hành động
+              
+              tbody 
+                each item, index in news
+                  tr
+                    td.text-center #{index+1}
+                    td #{item.title}
+                    td.text-center 
+                      img(
+                        src=item.img 
+                        alt=item.title 
+                        width="150px"
+                        height="auto"
+                      )
+                    td.content-preview !{item.content}
+                    td.text-center
+                      if(item.status === 'active')
+                        a(href="javascript:;" class="badge badge-success") Hoạt động
+                      else 
+                        a(href="javascript:;" class="badge badge-danger") Không hoạt động
+                    td.align-middle.text-center
+                          .d-inline-flex.gap-2
+                            if(role.permissions.includes("news_view"))
+                              a.btn.btn-outline-secondary.btn-sm(href=`/${prefixAdmin}/news/detail/${item.slug}`) Chi tiết
+                            if(role.permissions.includes("news_edit"))
+                              a.btn.btn-outline-warning.btn-sm(href=`/${prefixAdmin}/news/edit/${item.slug}`) Sửa
+                            if(role.permissions.includes("news_delete"))
+                              button.btn.btn-outline-danger.btn-sm(button-delete data-id=item.id) Xóa
+
+    +pagination(pagination)
+    form(
+      action=''
+      method='POST' 
+      id='form-delete-item'
+      data-path=`/${prefixAdmin}/news/delete`
+    )
+  else 
+    h2 Bạn không có quyền truy cập!

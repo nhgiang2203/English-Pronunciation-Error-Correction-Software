@@ -17,5 +17,11 @@ route.get('/edit/:id', middleware.requireLogin, controller.edit);
 route.patch('/edit/:id', middleware.requireLogin, upload.fields([{name: 'avt', maxCount: 1}]), uploadFields, controller.editPatch);
 route.post('/otp/:id', middleware.requireLogin, controller.otpPost);
 route.post('/verify/:email', middleware.requireLogin, controller.verifyPost);
+route.get('/forgot-password', controller.forgotPassword);
+route.post('/forgot-password', controller.forgotPasswordPost);
+route.get('/forgot-password/otp', controller.otpPassword);
+route.post('/forgot-password/otp', controller.otpPasswordPost);
+route.get('/forgot-password/reset', controller.resetPassword);
+route.post('/forgot-password/reset', controller.resetPasswordPost);
 
 export const accountRoutes = route;

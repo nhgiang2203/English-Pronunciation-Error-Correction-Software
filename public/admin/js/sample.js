@@ -15,7 +15,12 @@ function addQuestionRow() {
         name="questions[${currentIndex}][text]"
         rows="5"
       ></textarea>
-      <input type="file" class="form-control mt-2" name="questions[${currentIndex}][audio]" accept="audio/*" />
+
+      <div class="d-flex gap-2 mt-2">
+        <input type="file" class="form-control" name="questions[${currentIndex}][audioFile]" accept="audio/*" />
+        <button type="button" class="btn btn-secondary btn-sm" onclick="generateTTS(this, 'question', ${currentIndex})">Tự sinh audio</button>
+      </div>
+      <audio controls class="mt-2 d-none"></audio>
     </td>
     <td>
       <textarea
@@ -25,7 +30,12 @@ function addQuestionRow() {
         name="answers[${currentIndex}][text]"
         rows="5"
       ></textarea>
-      <input type="file" class="form-control mt-2" name="answers[${currentIndex}][audio]" accept="audio/*" />
+
+      <div class="d-flex gap-2 mt-2">
+        <input type="file" class="form-control" name="answers[${currentIndex}][audioFile]" accept="audio/*" />
+        <button type="button" class="btn btn-secondary btn-sm" onclick="generateTTS(this, 'answer', ${currentIndex})">Tự sinh audio</button>
+      </div>
+      <audio controls class="mt-2 d-none"></audio>
     </td>
     <td class="text-center">
       <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
@@ -36,8 +46,9 @@ function addQuestionRow() {
 
   tbody.appendChild(row);
   updateRowNumbers();
-  initTinyMCE(); // để TinyMCE attach vào textarea mới
+  initTinyMCE();
 }
+
 
 
 function removeRow(button) {
@@ -53,23 +64,78 @@ function updateRowNumbers() {
   });
 }
 
-// Lấy dữ liệu của TinyMCE khi submit form
-// function getFormData() {
-//   const allEditors = tinyMCE.editors;
-//   allEditors.forEach(editor => {
-//     const content = editor.getContent();
-//     const textarea = document.getElementById(editor.id);
-//     if (textarea) {
-//       textarea.value = content;
-//     }
-//   });
-// }
+function generateTTS(button, type, index) {
+  const cell = button.closest('td');
+  const textareaId = `${type}-${index}`;
+  let text = '';
 
+  if (tinymce.get(textareaId)) {
+    text = tinymce.get(textareaId).getContent({ format: 'text' }).trim();
+  } else {
+    const textarea = cell.querySelector(`#${textareaId}`);
+    text = textarea?.value.trim() || '';
+  }
 
-// // Khi gửi form
-// document.querySelector('form').addEventListener('submit', function (event) {
-//   getFormData(); // Trước khi gửi form, lấy dữ liệu TinyMCE
-// });
+  if (!text) {
+    alert("Vui lòng nhập nội dung trước khi sinh audio.");
+    return;
+  }
+
+  console.log(text);
+  console.log(type);
+  console.log(index);
+
+  button.disabled = true;
+  button.innerText = "Đang sinh...";
+
+  const formData = new FormData();
+  formData.append("text", text);
+  formData.append("type", type);  // 'question' hoặc 'answer'
+  formData.append("index", index);
+  formData.append("topic", "sample");  // hoặc 'practice', tùy context bạn đang dùng
+
+  fetch("http://127.0.0.1:5000/tts", {
+    method: "POST",
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.url) {
+        console.log(data.url);
+
+        // 🔁 XÓA input hidden cũ nếu đã tồn tại
+        const oldHidden = cell.querySelector(`input[name="${type}s[${index}][audio]"]`);
+        if (oldHidden) oldHidden.remove();
+
+        // ✅ Tạo input hidden mới
+        const hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.name = `${type}s[${index}][audio]`;
+        hidden.value = data.url;
+        cell.appendChild(hidden);
+
+        // ✅ Phát audio
+        const audio = cell.querySelector("audio");
+        if (audio) {
+          audio.src = data.url;
+          audio.classList.remove("d-none");
+          console.log("Audio src:", audio.src);
+          audio.load();
+        }
+      } else {
+        alert("Có lỗi xảy ra khi sinh audio");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Lỗi kết nối đến server.");
+    })
+    .finally(() => {
+      button.disabled = false;
+      button.innerText = "Tự sinh audio";
+    });
+}
+
 
 
 

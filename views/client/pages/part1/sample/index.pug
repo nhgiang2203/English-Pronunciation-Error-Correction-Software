@@ -2,6 +2,9 @@ extend ../../../layouts/default
 include ../../../mixins/box-head
 
 block main 
+  input(type="hidden", id="topicId", value=sample.title)
+  if loggedInUser
+    input(type="hidden", id="userId", value=loggedInUser.id)
   .container.my-4
     .row 
       .col-12 

@@ -5,30 +5,54 @@
         i.lni.lni-grid-alt
       .sidebar-logo
         a(href=`/${prefixAdmin}/dashboard`) NHG EDU
+    
     ul.sidebar-nav
-      li.sidebar-item
-        a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/dashboard` data-bs-target='#auth1' aria-expanded='false' aria-controls='auth1')
-          i.fa-solid.fa-house
-          span.menu-title Trang chủ
-          i.arrow-icon.fa-solid.fa-angle-down
-        ul#auth1.sidebar-dropdown.list-unstyled.collapse
-          li.sidebar-item-sub
-            a.sidebar-link(href=`/${prefixAdmin}/news/index`) Bài báo
+      if(role.permissions.includes("news_view"))
+        li.sidebar-item
+          a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/dashboard` data-bs-target='#auth1' aria-expanded='false' aria-controls='auth1')
+            i.fa-solid.fa-house
+            span.menu-title Trang chủ
+            i.arrow-icon.fa-solid.fa-angle-down
+          ul#auth1.sidebar-dropdown.list-unstyled.collapse
+            li.sidebar-item-sub
+              a.sidebar-link(href=`/${prefixAdmin}/news/index`) Bài báo
 
-      li.sidebar-item
-        a.sidebar-link.collapsed.has-dropdown(href=`/${prefixAdmin}/part1` data-bs-target='#auth2' aria-expanded='false' aria-controls='auth2')
-          i.fa-solid.fa-wave-square
-          span.menu-title Part 1
-          i.arrow-icon.fa-solid.fa-angle-down
-        ul#auth2.sidebar-dropdown.list-unstyled.collapse
-          li.sidebar-item-sub
-            a.sidebar-link(href=`/${prefixAdmin}/part1/sample/index`) Bài mẫu
-          li.sidebar-item-sub
-            a.sidebar-link(href=`/${prefixAdmin}/part1/practice/index`) Bài luyện tập
-      li.sidebar-item
-        a.sidebar-link(href=`/${prefixAdmin}/part2/index`)
-          i.fa-solid.fa-sliders
-          span Part 2
+      if(role.permissions.includes("part1_view"))  
+        li.sidebar-item
+          a.sidebar-link.collapsed.has-dropdown(href='#' data-bs-target='#auth2' aria-expanded='false' aria-controls='auth2')
+            i.fa-solid.fa-wave-square
+            span.menu-title Part 1
+            i.arrow-icon.fa-solid.fa-angle-down
+          ul#auth2.sidebar-dropdown.list-unstyled.collapse
+            li.sidebar-item-sub
+              a.sidebar-link(href=`/${prefixAdmin}/part1/sample/index`) Bài mẫu
+            li.sidebar-item-sub
+              a.sidebar-link(href=`/${prefixAdmin}/part1/practice/index`) Bài luyện tập
+      
+      if(role.permissions.includes("part2_view"))   
+        li.sidebar-item
+          a.sidebar-link(href=`/${prefixAdmin}/part2/index`)
+            i.fa-solid.fa-sliders
+            span Part 2
+      
+      if(role.permissions.includes("role_view")) 
+        li.sidebar-item
+          a.sidebar-link(href=`/${prefixAdmin}/role`)
+            i.fa-solid.fa-people-group
+            span Nhóm quyền
+      
+      if(role.permissions.includes("role_permissions")) 
+        li.sidebar-item
+          a.sidebar-link(href=`/${prefixAdmin}/role/permissions`)
+            i.fa-solid.fa-sitemap
+            span Phân quyền
+      
+      if(role.permissions.includes("account_view")) 
+        li.sidebar-item
+          a.sidebar-link(href=`/${prefixAdmin}/accounts`)
+            i.fa-solid.fa-users
+            span Danh sách tài khoản
+
       li.sidebar-item
         a.sidebar-link(href=`/${prefixAdmin}/account/detail/${user.id}`)
           i.lni.lni-user
@@ -38,6 +62,7 @@
         a.sidebar-link(href=`/${prefixAdmin}/account/edit/${user.id}`)
           i.lni.lni-cog
           span Cài đặt
+
     .sidebar-footer
       a.sidebar-link(href=`/${prefixAdmin}/account/logout`)
         i.lni.lni-exit

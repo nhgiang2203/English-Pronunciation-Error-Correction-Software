@@ -1,18 +1,59 @@
 import { Request, Response } from 'express';
 import { systemConfig } from '../../config/system';
 import News from '../../models/news.model';
+import { search } from '../../helper/search';
+import { pagination } from '../../helper/pagination';
+import { filterStatus } from '../../helper/filterStatus';
 
 
 // GET /news/index
 export const newsIndex = async(req: Request, res: Response) => {
-  const news = await News.find({
+  let find = {
     deleted: false
-  });
+  };
+  //Filter status
+  const filterStatusNews = filterStatus(req.query);
+  if (req.query.status)
+    find['status'] = req.query.status;
+  
+  console.log('Find condition:', find);
 
 
-  res.render(`${systemConfig.prefixAdmin}/pages/news/index`, {
+  //Search 
+  const searchNews = search(req.query);
+  if (searchNews['regex'])
+      find['title'] = searchNews['regex'];
+  
+  //Pagination
+  const countNews = await News.countDocuments(find);
+  let objectPaginationNews = pagination(
+      {
+      currentPage: 1,
+      limitedItems: 4
+      },
+      req.query,
+      countNews
+  )
+
+  //Sort
+  let sort = {};
+  if (req.query.sortKey && req.query.sortValue){
+      sort[req.query.sortKey] = req.query.sortValue;
+  } else {
+      sort['createdAt'] = "desc";
+  }
+
+  const news = await News.find(find)
+  .limit(objectPaginationNews.limitedItems)
+  .skip(objectPaginationNews.skip)
+  .sort(sort);
+
+  res.render('admin/pages/news/index', {
     pageTitle: 'Bài báo',
-    news: news
+    news: news,
+    pagination: objectPaginationNews,
+    keyword: searchNews['keyword'],
+    filterStatus: filterStatusNews
   });
 }
 

@@ -1,10 +1,11 @@
 extend ../../layouts/default
 include ../../mixins/box-head
+include ../../mixins/pagination.pug
 
 block main 
   .container.my-5
     .row 
-      .col-12 
+      .col-12
 
     .row
       .col-12
@@ -13,32 +14,48 @@ block main
             h4.mb-0.text-center Part 1
 
           .card-body.bg-light
-            // Sample section
-            .mb-5
-              h5.text-primary.mb-3 Bài mẫu
-              .row
-                each sample in samples
-                  .col-md-4.mb-4
-                    .card.card-hover.shadow-sm.border-0.rounded-3
-                      .card-body
-                        h5.card-title.mb-0
-                          a(href=`/part1/sample/${sample.slug}`, class="text-decoration-none text-primary fw-bold") #{sample.title}
+            // Tabs
+            ul.nav.nav-tabs.mb-4(role="tablist")
+              li.nav-item
+                a.nav-link(class=activeTab === 'samples' ? 'active' : '', href="#samples", data-bs-toggle="tab", id="tab-samples") Bài mẫu
+              li.nav-item
+                a.nav-link(class=activeTab === 'practices' ? 'active' : '', href="#practices", data-bs-toggle="tab", id="tab-practices") Bài luyện tập
 
-            // Practice section
-            h5.text-primary.mb-3 Bài luyện tập
-            .row
-              each practice in practices
-                .col-md-4.mb-4
-                  .card.card-hover.shadow-sm.border-0.rounded-3
-                    .card-body
-                      h5.card-title.mb-0
-                        if loggedInUser
-                          a(href=`/part1/practice/${practice.slug}`, class="text-decoration-none text-primary fw-bold") #{practice.title}
-                        else
-                          a(
-                            href=`/user/login?redirect=/part1/practice/${practice.slug}`, 
-                            class="text-decoration-none text-secondary fw-bold", 
-                            title="Đăng nhập để sử dụng"
-                          ) 
-                            i.fa-solid.fa-lock.mr-1
-                            | #{practice.title}
+            .tab-content
+              // Tab 1: Sample
+              .tab-pane.fade#samples(class=activeTab === 'samples' ? 'show active' : '')
+                .row
+                  each sample in samples
+                    .col-md-4.mb-4
+                      .card.card-hover.shadow-sm.border-0.rounded-3
+                        .card-body
+                          h5.card-title.mb-0
+                            a(href=`/part1/sample/${sample.slug}`, class="text-decoration-none text-primary fw-bold") #{sample.title}
+                .mt-4
+                  +pagination(pagination, 'sample')
+
+              // Tab 2: Practice
+              .tab-pane.fade#practices(class=activeTab === 'practices' ? 'show active' : '')
+                .row
+                  each practice in practices
+                    .col-md-4.mb-4
+                      .card.card-hover.shadow-sm.border-0.rounded-3
+                        .card-body
+                          h5.card-title.mb-0
+                            if loggedInUser
+                              a(href=`/part1/practice/${practice.slug}`, class="text-decoration-none text-primary fw-bold") #{practice.title}
+                            else
+                              a(
+                                href=`/user/login?redirect=/part1/practice/${practice.slug}`, 
+                                class="text-decoration-none text-secondary fw-bold", 
+                                title="Đăng nhập để sử dụng"
+                              ) 
+                                i.fa-solid.fa-lock.mr-1
+                                | #{practice.title}
+                .mt-4
+                  +pagination(pagination, 'practice')
+
+
+  // Script to handle ?tab=
+block script 
+  script(src="/js/part1.js") 

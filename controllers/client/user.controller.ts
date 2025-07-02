@@ -112,7 +112,7 @@ export const detail = async(req: Request, res: Response) => {
   const answerUser = await MyAnswer.find({
     userId: req.params.id,
     deleted: false
-  });
+  }).sort({ createdAt: -1 });
 
   user['answers'] = answerUser;
   const lenAnswer = answerUser.length;
@@ -295,6 +295,7 @@ export const otpPost = async(req: Request, res: Response) => {
   }
 
   const otp = generate.generateRandomNumber(6);
+  console.log(otp);
   const dataConfirmEmail = {
     email: email,
     otp: otp,
@@ -474,3 +475,108 @@ export const following = async(req: Request, res: Response) => {
   })
 }
 
+//GET /user/forgot-password
+export const forgotPassword = (req: Request, res: Response) => {
+  res.render('client/pages/user/forgot-password', {
+      pageTitle: 'Lấy lại mật khẩu'
+  })
+}
+
+//POST user/forgot-password
+export const forgotPasswordPost = async(req: Request, res: Response) => {
+  const email = req.body.email;
+  const user = await User.findOne({
+    email: email,
+    deleted: false,
+    status: 'active'
+  });
+
+  if(!user){
+    req.flash('error', 'Email không tồn tại!');
+    res.redirect('/user/login');
+    return;
+  }
+  if(user.googleId !== null){
+    req.flash('error', 'Email không thể đổi mật khẩu!');
+    res.redirect('/user/login');
+    return;
+  }
+
+  const otp = generate.generateRandomNumber(6);
+  console.log(otp);
+  const dataConfirmEmail = {
+    email: email,
+    otp: otp,
+    expireAt: Date.now()
+  };
+
+  const objectConfirmEmail = new ConfirmEmail(dataConfirmEmail);
+  await objectConfirmEmail.save();
+
+  const subject = 'Mã OTP xác minh';
+  const html = `Mã OTP xác minh là <b>${otp}</b>. Thời hạn sử dụng là 3 phút`;
+  helper.sendEmail(email, subject, html);
+
+  res.redirect(`/user/forgot-password/otp?email=${email}`);
+}
+
+//GET /user/forgot-password/otp
+export const otpPassword = (req: Request, res: Response) => {
+  const email = req.query.email;
+
+  res.render('client/pages/user/otp-password', {
+      pageTitle: 'Nhập mã OTP',
+      email: email
+  });
+}
+
+//POST /user/forgot-password/otp
+export const otpPasswordPost = async(req: Request, res: Response) => {
+  const email = req.body.email;
+  const otp = req.body.otp;
+
+  const result = await ConfirmEmail.findOne({
+      email: email,
+      otp: otp
+  });
+
+  if(!result){
+      req.flash('error', 'OTP không hợp lệ');
+      res.redirect('/user/forgot-password/otp');
+      return;
+  }
+
+  const user = await User.findOne({
+      email: email
+  });
+  res.cookie("tokenUser", user.tokenUser);
+
+  res.redirect('/user/forgot-password/reset');
+}
+
+//GET /user/forgot-password
+export const resetPassword = (req: Request, res: Response) => {
+  res.render('client/pages/user/reset-password', {
+      pageTitle: 'Nhập lại mật khẩu',
+  });
+}
+
+//[POST]/user/forgot-password/reset
+export const resetPasswordPost = async(req: Request, res: Response) => {
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+  if(password !== confirmPassword){
+    req.flash('error', 'Mật khẩu không trùng khớp!');
+    res.redirect('/user/forgot-password/reset');
+    return;
+  }
+  
+  const tokenUser = req.cookies.tokenUser;
+  await User.updateOne({
+      tokenUser: tokenUser
+  }, {
+      password: md5(password)
+  });
+
+  res.redirect('/dashboard/');
+}

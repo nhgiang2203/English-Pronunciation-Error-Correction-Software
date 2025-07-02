@@ -1,16 +1,58 @@
 import { Request, Response } from 'express';
 import Part2 from '../../models/part2.model';
 import { systemConfig } from '../../config/system';
+import { search } from '../../helper/search';
+import { pagination } from '../../helper/pagination';
+import { filterStatus } from '../../helper/filterStatus';
 
 // GET /admin/part2/index
 export const index = async(req: Request, res: Response) => {
-  const topics = await Part2.find({
+  let find = {
     deleted: false
-  });
+  };
+  //Filter status
+  const filterStatusPart2 = filterStatus(req.query);
+  if (req.query.status)
+    find['status'] = req.query.status;
+  
+  console.log('Find condition:', find);
+
+
+  //Search 
+  const searchPart2 = search(req.query);
+  if (searchPart2['regex'])
+      find['title'] = searchPart2['regex'];
+  
+  //Pagination
+  const countPart2s = await Part2.countDocuments(find);
+  let objectPaginationPart2 = pagination(
+      {
+      currentPage: 1,
+      limitedItems: 4
+      },
+      req.query,
+      countPart2s
+  )
+
+  //Sort
+  let sort = {};
+  if (req.query.sortKey && req.query.sortValue){
+      sort[req.query.sortKey] = req.query.sortValue;
+  } else {
+      sort['createdAt'] = "desc";
+  }
+
+  const topics = await Part2.find(find)
+  .limit(objectPaginationPart2.limitedItems)
+  .skip(objectPaginationPart2.skip)
+  .sort(sort);
 
   res.render('admin/pages/part2/index', {
-    pageTitle: 'Part 2',
-    topics: topics
+    pageTitle: 'Part2',
+    topics: topics,
+    pagination: objectPaginationPart2,
+    keyword: searchPart2['keyword'],
+    filterStatus: filterStatusPart2
   });
 }
 

@@ -2,18 +2,60 @@ import { Request, Response, Express } from 'express';
 import Sample from '../../models/sample.model';
 import Practice from '../../models/practice.model';
 import { systemConfig } from '../../config/system';
+import { search } from '../../helper/search';
+import { pagination } from '../../helper/pagination';
+import { filterStatus } from '../../helper/filterStatus';
 import qs from 'qs';
 
 // Trang chủ Sample
 export const indexSample = async(req: Request, res: Response) => {
-  const samples = await Sample.find({
+  let find = {
     deleted: false
-  });
-
+  };
+  //Filter status
+  const filterStatusSample = filterStatus(req.query);
+  if (req.query.status)
+    find['status'] = req.query.status;
   
+  console.log('Find condition:', find);
+
+
+  //Search 
+  const searchSample = search(req.query);
+  if (searchSample['regex'])
+      find['title'] = searchSample['regex'];
+  
+  //Pagination
+  const countSamples = await Sample.countDocuments(find);
+  let objectPaginationSample = pagination(
+      {
+      currentPage: 1,
+      limitedItems: 4
+      },
+      req.query,
+      countSamples
+  )
+
+  //Sort
+  let sort = {};
+  if (req.query.sortKey && req.query.sortValue){
+      sort[req.query.sortKey] = req.query.sortValue;
+  } else {
+      sort['createdAt'] = "desc";
+  }
+
+  const samples = await Sample.find(find)
+  .limit(objectPaginationSample.limitedItems)
+  .skip(objectPaginationSample.skip)
+  .sort(sort);
+
+
   res.render('admin/pages/part1/sample/index', {
     pageTitle: 'Bài mẫu',
-    samples: samples
+    samples: samples,
+    pagination: objectPaginationSample,
+    keyword: searchSample['keyword'],
+    filterStatus: filterStatusSample
   });
 }
 
@@ -69,12 +111,12 @@ export const editSamplePatch = async (req: Request, res: Response) => {
     indices.forEach(index => {
       const qText = questions[index]?.text || '';
       console.log(qText);
-      const qAudio = req.body[`questions[${index}][audio]`] || sample.questions?.[index]?.[1] || '';
+      const qAudio = req.body[`questions[${index}][audioFile]`] || questions[index]?.audio || sample.questions?.[index]?.[1] || '';
       console.log(qAudio);
       updatedQuestions.push([qText, qAudio]);
 
       const aText = answers[index]?.text || '';
-      const aAudio = req.body[`answers[${index}][audio]`] || sample.answers?.[index]?.[1] || '';
+      const aAudio = req.body[`answers[${index}][audioFile]`] || answers[index]?.audio || sample.answers?.[index]?.[1] || '';
       updatedAnswers.push([aText, aAudio]);
     });
 
@@ -121,11 +163,13 @@ export const createSamplePost = async(req: Request, res: Response) => {
     const indices = Object.keys(questions);
     indices.forEach(index => {
       const qText = questions[index]?.text || '';
-      const qAudio = req.body[`questions[${index}][audio]`] || '';
+      console.log(qText);
+      const qAudio = req.body[`questions[${index}][audioFile]`] || questions[index]?.audio || '';
+      console.log(qAudio);
       ques.push([qText, qAudio]);
 
       const aText = answers[index]?.text || '';
-      const aAudio = req.body[`answers[${index}][audio]`] || '';
+      const aAudio = req.body[`answers[${index}][audioFile]`] || answers[index]?.audio || '';
       ans.push([aText, aAudio]);
     });
 
@@ -158,14 +202,52 @@ export const deleteSample = async(req: Request, res: Response) => {
 
 // Trang chủ Practice
 export const indexPractice = async(req: Request, res: Response) => {
-  const practices = await Practice.find({
+  let find = {
     deleted: false
-  });
-
+  };
+  //Filter status
+  const filterStatusPractice = filterStatus(req.query);
+  if (req.query.status)
+    find['status'] = req.query.status;
   
+  console.log('Find condition:', find);
+
+
+  //Search 
+  const searchPractice = search(req.query);
+  if (searchPractice['regex'])
+      find['title'] = searchPractice['regex'];
+  
+  //Pagination
+  const countPractices = await Practice.countDocuments(find);
+  let objectPaginationPractice = pagination(
+      {
+      currentPage: 1,
+      limitedItems: 4
+      },
+      req.query,
+      countPractices
+  )
+
+  //Sort
+  let sort = {};
+  if (req.query.sortKey && req.query.sortValue){
+      sort[req.query.sortKey] = req.query.sortValue;
+  } else {
+      sort['createdAt'] = "desc";
+  }
+
+  const practices = await Practice.find(find)
+  .limit(objectPaginationPractice.limitedItems)
+  .skip(objectPaginationPractice.skip)
+  .sort(sort);
+
   res.render('admin/pages/part1/practice/index', {
     pageTitle: 'Bài luyện tập',
-    practices: practices
+    practices: practices,
+    pagination: objectPaginationPractice,
+    keyword: searchPractice['keyword'],
+    filterStatus: filterStatusPractice
   });
 }
 
@@ -174,7 +256,7 @@ export const detailPractice= async(req: Request, res: Response) => {
   const practice = await Practice.findOne({
     slug: req.params.slugPractice,
     deleted: false
-  });
+  }).sort({ createdAt: -1 });
 
   res.render('admin/pages/part1/practice/detail', {
     pageTitle: practice.title,
@@ -218,7 +300,7 @@ export const editPracticePatch = async (req: Request, res: Response) => {
 
     indices.forEach(index => {
       const qText = questions[index]?.text || '';
-      const qAudio = req.body[`questions[${index}][audio]`] || practice.questions[index]?.audio || '';
+      const qAudio = req.body[`questions[${index}][audioFile]`] || questions[index]?.audio || practice.questions[index]?.audio || '';
     
       updatedQuestions.push({
         text: qText,
@@ -256,15 +338,16 @@ export const createPracticePost = async(req: Request, res: Response) => {
   try{
     const questions = req.body.questions || {};
 
+    console.log(questions);
 
-    const updatedQuestions = [];
+    const ques = [];
 
     const indices = Object.keys(questions);
     indices.forEach(index => {
       const qText = questions[index]?.text || '';
-      const qAudio = req.body[`questions[${index}][audio]`] || '';
+      const qAudio = req.body[`questions[${index}][audioFile]`] || questions[index]?.audio || '';
     
-      updatedQuestions.push({
+      ques.push({
         text: qText,
         audio: qAudio
       });
@@ -274,7 +357,7 @@ export const createPracticePost = async(req: Request, res: Response) => {
     const practiceData = {
       title: req.body.title,
       status: req.body.status,
-      questions: updatedQuestions
+      questions: ques
     }
 
     const newPractice = new Practice(practiceData);

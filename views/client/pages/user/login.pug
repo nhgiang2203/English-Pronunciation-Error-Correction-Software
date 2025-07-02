@@ -15,7 +15,7 @@ block main
         img.image-1(src='/images/image-1.png' alt='')
         form#login-form(action='/user/login' method='POST')
           input(type='hidden', name='redirect', value=redirect)
-          h3 Chào mừng
+          h3 Chào mừng bạn đã quay trở lại
           .form-holder
             span(class="fa fa-envelope")
             input.form-control(type='email' placeholder='Email' name='email' required)
@@ -27,6 +27,9 @@ block main
 
           button(type='submit')
             span Đăng nhập
+          
+          p.mt-4.text-center
+            a(href='/user/forgot-password') Quên mật khẩu?
 
           hr(style="margin: 30px 0;")
 

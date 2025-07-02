@@ -5,6 +5,8 @@ import { part1Routes } from './part1.route';
 import { newsRoutes } from './news.route';
 import { accountRoutes } from './account.route';
 import { part2Routes } from './part2.route';
+import { roleRoutes } from './role.route';
+import { accountsRoutes } from './accounts.route';
 import * as middleware from '../../middlewares/admin/auth.middleware';
 
 const adminRoutes = (app: Express): void => {
@@ -15,6 +17,8 @@ const adminRoutes = (app: Express): void => {
   app.use(PATH_ADMIN + '/news', middleware.requireAuth, middleware.requireLogin, newsRoutes);
   app.use(PATH_ADMIN + '/account', middleware.requireAuth, accountRoutes);
   app.use(PATH_ADMIN + '/part2', middleware.requireAuth, middleware.requireLogin, part2Routes);
+  app.use(PATH_ADMIN + '/role', middleware.requireAuth, middleware.requireLogin, roleRoutes);
+  app.use(PATH_ADMIN + '/accounts', middleware.requireAuth, middleware.requireLogin, accountsRoutes);
 }
 
 export default adminRoutes;

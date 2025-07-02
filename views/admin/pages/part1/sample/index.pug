@@ -1,76 +1,131 @@
 extends ../../../layouts/default.pug
+include ../../../mixins/sort.pug
+include ../../../mixins/search.pug
+include ../../../mixins/pagination.pug
+include ../../../mixins/filter-status.pug
 
 block main
-  h1.mb-4.text-primary #{pageTitle}
+  if(role.permissions.includes("part1_view"))
+    h1.mb-4.text-primary #{pageTitle}
 
-  .card.shadow-sm.mb-4
-    .card-header.bg-light.d-flex.justify-content-between.align-items-center
-      span.fw-semibold.text-dark Danh sách bài mẫu
-      a.btn.btn-success(href=`/${prefixAdmin}/part1/sample/create`) + Thêm
+    .card.shadow-sm.mb-4
+      .card-header.bg-light
+        span.fw-semibold.text-dark Danh sách bài mẫu
 
-    .card-body.p-0
-      .table-wrapper
-        .table-responsive
-          table.table.table-hover.align-middle.fixed-table
-            thead.table-light
-              tr
-                th(scope='col') STT
-                th(scope='col') Tiêu đề
-                th(scope='col') Câu hỏi
-                th(scope='col') Câu trả lời
-                th(scope='col') Trạng thái
-                th(scope='col') Hành động
+      .card-body
+        .d-flex.flex-wrap.align-items-end.justify-content-between.gap-2
 
-            tbody
-              each item, itemIndex in samples
-                each question, qIndex in item.questions
-                  tr
-                    if qIndex === 0
-                      td(rowspan=item.questions.length).align-middle= itemIndex + 1
-                      td(rowspan=item.questions.length).align-middle.fw-bold= item.title
+          // Nhóm bộ lọc trạng thái (cho 3 nút nằm cùng hàng)
+          .d-flex.flex-wrap.gap-2
+            +filter-status(filterStatus)  
 
-                    // Question cell
-                    td.question-cell
-                      div.d-flex
-                        i.fas.fa-volume-up.me-2.text-primary(
-                          role="button", 
-                          style="align-self: flex-start;",
-                          onclick=`playAudio('${question[1]}')`
-                        )
-                        span.fw-semibold.text-dark !{question[0]}
+          // Dropdown sắp xếp
+          .flex-grow-1(style="max-width: 200px;")
+            +sort()
+
+          // Tìm kiếm (kéo dài thanh input)
+          .flex-grow-1(style="max-width: 300px;")
+            +search(keyword)
+
+          // Nút Thêm bài mẫu
+          if(role.permissions.includes("part1_create"))
+            a.btn.btn-outline-success(href=`/${prefixAdmin}/part1/sample/create`) + Thêm mới
 
 
-                    // Answer cell
-                    td.answer-cell
-                      div.d-flex
-                        i.fas.fa-volume-up.me-1.text-primary(
-                          role="button", 
-                          onclick=`playAudio('${item.answers[qIndex][1]}')`
-                        )
-                        span.answer-text !{item.answers[qIndex][0]}
+      .card-body.p-0
+        .table-wrapper
+          .table-responsive
+            table.table.table-hover.align-middle.fixed-table
+              thead.table-light
+                tr
+                  th(scope='col') STT
+                  th(scope='col') Tiêu đề
+                  th(scope='col') Câu hỏi
+                  th(scope='col') Câu trả lời
+                  th(scope='col') Trạng thái
+                  th(scope='col') Hành động
 
-                    if qIndex === 0
-                      td(rowspan=item.questions.length).align-middle
+              tbody
+                each item, itemIndex in samples
+                  if item.questions.length === 0
+                    tr
+                      td.align-middle= itemIndex + 1
+                      td.align-middle.fw-bold= item.title
+                      td.text-muted(colspan='2') Không có câu hỏi hoặc câu trả lời
+                      td.align-middle
                         if item.status == 'active'
                           span.badge.bg-success.px-3.py-2 Hoạt động
                         else
                           span.badge.bg-danger.px-3.py-2 Không hoạt động
+                      td.align-middle
+                        if(role.permissions.includes("part1_view"))
+                          a.btn.btn-outline-secondary.btn-sm.me-2(
+                            href=`/${prefixAdmin}/part1/sample/detail/${item.slug}`
+                          ) Chi tiết
+                        if(role.permissions.includes("part1_edit"))
+                          a.btn.btn-outline-warning.btn-sm.me-2(
+                            href=`/${prefixAdmin}/part1/sample/edit/${item.slug}`
+                          ) Sửa
+                        if(role.permissions.includes("part1_delete"))
+                          button.btn.btn-outline-danger.btn-sm(
+                            button-delete
+                            data-id=item.id
+                          ) Xóa
+                  else
+                    each question, qIndex in item.questions
+                      tr
+                        if qIndex === 0
+                          td(rowspan=item.questions.length).align-middle= itemIndex + 1
+                          td(rowspan=item.questions.length).align-middle.fw-bold= item.title
 
-                      td(rowspan=item.questions.length).align-middle
-                        a.btn.btn-outline-secondary.btn-sm.me-2(
-                          href=`/${prefixAdmin}/part1/sample/detail/${item.slug}`
-                        ) Chi tiết
-                        a.btn.btn-outline-warning.btn-sm.me-2(
-                          href=`/${prefixAdmin}/part1/sample/edit/${item.slug}`
-                        ) Sửa
-                        button.btn.btn-outline-danger.btn-sm(
-                          button-delete
-                          data-id=item.id
-                        ) Xóa
+                        // Question cell
+                        td.question-cell
+                          div.d-flex
+                            i.fas.fa-volume-up.me-2.text-primary(
+                              role="button", 
+                              style="align-self: flex-start;",
+                              onclick=`playAudio('${question[1]}')`
+                            )
+                            span.fw-semibold.text-dark !{question[0]}
 
-  form(
-    action=''
-    method='POST'
-    id='form-delete-item'
-    data-path=`/${prefixAdmin}/part1/sample/delete`
-  )
+                        // Answer cell
+                        td.answer-cell
+                          div.d-flex
+                            i.fas.fa-volume-up.me-1.text-primary(
+                              role="button", 
+                              onclick=`playAudio('${item.answers[qIndex][1]}')`
+                            )
+                            span.answer-text !{item.answers[qIndex][0]}
+
+                        if qIndex === 0
+                          td(rowspan=item.questions.length).align-middle
+                            if item.status == 'active'
+                              span.badge.bg-success.px-3.py-2 Hoạt động
+                            else
+                              span.badge.bg-danger.px-3.py-2 Không hoạt động
+
+                          td(rowspan=item.questions.length).align-middle
+                            if(role.permissions.includes("part1_view"))
+                              a.btn.btn-outline-secondary.btn-sm.me-2(
+                                href=`/${prefixAdmin}/part1/sample/detail/${item.slug}`
+                              ) Chi tiết
+                            if(role.permissions.includes("part1_edit"))
+                              a.btn.btn-outline-warning.btn-sm.me-2(
+                                href=`/${prefixAdmin}/part1/sample/edit/${item.slug}`
+                              ) Sửa
+                            if(role.permissions.includes("part1_delete"))
+                              button.btn.btn-outline-danger.btn-sm(
+                                button-delete
+                                data-id=item.id
+                              ) Xóa
+    +pagination(pagination)
+
+    form(
+      action=''
+      method='POST'
+      id='form-delete-item'
+      data-path=`/${prefixAdmin}/part1/sample/delete`
+    )
+  
+  else 
+    h2 Bạn không có quyền truy cập!

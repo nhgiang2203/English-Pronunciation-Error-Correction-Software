@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import md5 from 'md5';
 import Account from '../../models/account.model';
 import ConfirmEmail from '../../models/email-confirm.model';
+import Role from '../../models/role.model';
 import { systemConfig } from '../../config/system';
 import * as generate from '../../helper/generate';
 import * as helper from '../../helper/sendMail';
@@ -57,6 +58,12 @@ export const detail = async(req: Request, res: Response) => {
     deleted: false
   });
 
+  const role = await Role.findOne({
+    _id: account.role_id,
+    deleted: false
+  });
+
+  account['role'] = role.title;
   res.render('admin/pages/account/detail',{
     pageTitle: account.username,
     account: account
@@ -88,7 +95,7 @@ export const editPatch = async (req: Request, res: Response) => {
 
     if (!account) {
       req.flash('error', 'Người dùng không tồn tại!');
-      return res.redirect(`/account/edit/${req.params.id}`);
+      return res.redirect(`/${systemConfig.prefixAdmin}/account/edit/${req.params.id}`);
     }
 
     const tab = req.body.tab || req.query.tab;
@@ -199,6 +206,7 @@ export const otpPost = async(req: Request, res: Response) => {
   }
 
   const otp = generate.generateRandomNumber(6);
+  console.log(otp);
   const dataConfirmEmail = {
     email: email,
     otp: otp,
@@ -252,4 +260,99 @@ export const verifyPost = async(req: Request, res: Response) => {
       success: true
     });
   }
+}
+
+//GET /admin/account/forgot-password
+export const forgotPassword = (req: Request, res: Response) => {
+  res.render('admin/pages/account/forgot-password', {
+      pageTitle: 'Lấy lại mật khẩu'
+  })
+}
+
+//POST account/forgot-password
+export const forgotPasswordPost = async(req: Request, res: Response) => {
+  const email = req.body.email;
+  const user = await Account.findOne({
+    email: email,
+    deleted: false,
+    status: 'active'
+  });
+
+  if(!user){
+    req.flash('error', 'Email không tồn tại!');
+    res.redirect(`/${systemConfig.prefixAdmin}/account/login`);
+    return;
+  }
+
+  const otp = generate.generateRandomNumber(6);
+  console.log(otp);
+  const dataConfirmEmail = {
+    email: email,
+    otp: otp,
+    expireAt: Date.now()
+  };
+
+  const objectConfirmEmail = new ConfirmEmail(dataConfirmEmail);
+  await objectConfirmEmail.save();
+
+  const subject = 'Mã OTP xác minh';
+  const html = `Mã OTP xác minh là <b>${otp}</b>. Thời hạn sử dụng là 3 phút`;
+  helper.sendEmail(email, subject, html);
+
+  res.redirect(`/${systemConfig.prefixAdmin}/account/forgot-password/otp?email=${email}`);
+}
+
+//GET /account/otp
+export const otpPassword = (req: Request, res: Response) => {
+  const email = req.query.email;
+
+  res.render('admin/pages/account/otp-password', {
+      pageTitle: 'Nhập mã OTP',
+      email: email
+  });
+}
+
+//POST /user/forgot-password/otp
+export const otpPasswordPost = async(req: Request, res: Response) => {
+  const email = req.body.email;
+  const otp = req.body.otp;
+
+  const result = await ConfirmEmail.findOne({
+      email: email,
+      otp: otp
+  });
+
+  if(!result){
+      req.flash('error', 'OTP không hợp lệ');
+      res.redirect(`/${systemConfig.prefixAdmin}/account/forgot-password/otp`);
+      return;
+  }
+
+  const user = await Account.findOne({
+      email: email
+  });
+  res.cookie("token", user.token);
+
+  res.redirect(`/${systemConfig.prefixAdmin}/account/forgot-password/reset`);
+}
+
+//GET /account/forgot-password/reset
+export const resetPassword = (req: Request, res: Response) => {
+  res.render('admin/pages/account/reset-password', {
+      pageTitle: 'Nhập lại mật khẩu',
+  });
+}
+
+//[POST]/user/forgot-password/reset
+export const resetPasswordPost = async(req: Request, res: Response) => {
+  const token = req.cookies.token;
+  const password = req.body.password;
+
+  await Account.updateOne({
+      token: token
+  }, {
+      password: md5(password)
+  });
+
+  res.redirect(`/${systemConfig.prefixAdmin}/dashboard/`);
 }

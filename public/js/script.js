@@ -126,21 +126,5 @@ if (boxSearchCustom) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const toggleBtn = document.querySelector('.user-toggle');
-  const dropdown = document.querySelector('.user-dropdown');
-
-  if (toggleBtn && dropdown) {
-    toggleBtn.addEventListener('click', () => {
-      dropdown.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!toggleBtn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.add('hidden');
-      }
-    });
-  }
-});
 
 

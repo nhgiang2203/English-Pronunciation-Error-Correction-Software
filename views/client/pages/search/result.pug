@@ -1,35 +1,56 @@
+extend ../../layouts/default
+
 block main
   .container.mt-4
     h2 Kết quả tìm kiếm cho "#{keyword}"
 
-    if sample.length
+    if samples && samples.length
       h3.mt-4 Bài mẫu
       ul.list-group
-        each item in sample
+        each item in samples
           li.list-group-item
             a(href=`/part1/sample/${item.slug}`) #{item.title}
 
-    if practice.length
+    if practices && practices.length
       h3.mt-4 Bài luyện tập 
       ul.list-group
-        each item in practice
+        each item in practices
           li.list-group-item
-            a(href=`/part1/practice/${item.slug}`) #{item.title}
+            if loggedInUser
+              a(href=`/part1/practice/${item.slug}`, class="text-decoration-none text-primary fw-bold") #{item.title}
+            else
+              a(
+                href=`/user/login?redirect=/part1/practice/${item.slug}`, 
+                class="text-decoration-none text-secondary fw-bold", 
+                title="Đăng nhập để sử dụng"
+              ) 
+                i.fa-solid.fa-lock.mr-1
+                | #{item.title}
     
-    if part2.length
+    if part2s && part2s.length
       h3.mt-4 Part 2
       ul.list-group
-        each item in part2
+        each item in part2s
           li.list-group-item
-            a(href=`/part2/${item.slug}`) #{item.title}
+            if loggedInUser
+              a(href=`/part2/detail/${item.slug}`, class="text-decoration-none text-primary fw-bold") #{item.title}
+            else
+              a(
+                href=`/user/login?redirect=/part2/detail/${item.slug}`, 
+                class="text-decoration-none text-secondary fw-bold", 
+                title="Đăng nhập để sử dụng"
+              ) 
+                i.fa-solid.fa-lock.mr-1
+                | #{item.title}
 
-    if user.length
+    if users && users.length
       h3.mt-4 Người dùng 
       ul.list-group
-        each u in user
+        each u in users
           li.list-group-item.d-flex.align-items-center
             img.rounded-circle(src=u.avatar, alt="avatar", width="40", height="40")
             a.ms-2(href=`/user/detail/${u.id}`) #{u.username}
 
-    if !sample.length && !practice.length && !part2.length && !user.length
+    if (!samples || !samples.length) && (!practices || !practices.length) && (!part2s || !part2s.length) && (!users || !users.length)
       p.text-muted Không tìm thấy.
+

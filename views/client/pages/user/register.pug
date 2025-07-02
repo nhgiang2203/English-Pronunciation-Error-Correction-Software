@@ -17,10 +17,10 @@ block main
           h3 Tài khoản mới?
           .form-holder
             span(class="fa fa-user")
-            input.form-control(type='text' placeholder='Tên tài khoản' name='username')
+            input.form-control(type='text' placeholder='Tên tài khoản' name='username' required)
           .form-holder
             span(class="fa fa-envelope")
-            input.form-control(type='text' placeholder='Email' name='email')
+            input.form-control(type='email' placeholder='Email' name='email' required)
           .form-holder
             span(class="fa fa-lock")
             input.form-control(type='password' placeholder='Mật khẩu' name='password')

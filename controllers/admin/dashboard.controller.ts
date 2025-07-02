@@ -5,7 +5,9 @@ import Sample from '../../models/sample.model';
 import Practice from '../../models/practice.model';
 import Part2 from '../../models/part2.model';
 import User from '../../models/user.model';
+import Account from '../../models/account.model';
 import moment from 'moment';
+
 
 export const index = async(req: Request, res: Response) => {
   const news = await News.find({
@@ -28,10 +30,14 @@ export const index = async(req: Request, res: Response) => {
     deleted: false
   }).countDocuments();
 
+  const accounts = await Account.find({
+    deleted: false
+  }).select('username avatar');
+
 
   res.render(`${systemConfig.prefixAdmin}/pages/dashboard/index`, {
     pageTitle: 'Trang tổng quan',
-    news, samples, practices, part2s, users
+    news, samples, practices, part2s, users, accounts
   });
 };
 

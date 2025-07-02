@@ -42,5 +42,11 @@ route.post('/my-answer/:id', middleware.requireLogin, controller.myAnswerPost);
 route.post('/isFollowing', middleware.requireLogin, controller.isFollowing);
 route.get('/follower/:id', middleware.requireLogin, controller.follower);
 route.get('/following/:id', middleware.requireLogin, controller.following);
+route.get('/forgot-password', controller.forgotPassword);
+route.post('/forgot-password', controller.forgotPasswordPost);
+route.get('/forgot-password/otp', controller.otpPassword);
+route.post('/forgot-password/otp', controller.otpPasswordPost);
+route.get('/forgot-password/reset', controller.resetPassword);
+route.post('/forgot-password/reset', controller.resetPasswordPost);
 
 export const userRoutes: Router = route;
